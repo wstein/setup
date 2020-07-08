@@ -1,0 +1,20 @@
+#!/bin/sh
+
+set -e 
+
+# setup vscode repo
+sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+
+sudo dnf -y install hub gitk git-gui htop screen neovim keepassxc code fira-code-fonts
+
+cat <<EOF > ~/.config/Code/User/settings.json
+{
+    "editor.fontFamily": "'Fira Code','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+    "editor.fontLigatures": true,
+    "editor.formatOnSave": true,
+    "telemetry.enableTelemetry": false,
+    "telemetry.enableCrashReporter": false
+}
+EOF
+
