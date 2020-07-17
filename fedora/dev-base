@@ -2,13 +2,15 @@
 
 set -e 
 
-TERMINUS_RPM=$(wget https://github.com/Eugeny/terminus/releases/download/v1.0.112/terminus-1.0.112-linux.rpm --directory-prefix=/tmp -nv 2>&1 | cut -d\" -f2)
-GITKRAKEN_RPM=$(wget https://release.axocdn.com/linux/gitkraken-amd64.rpm --directory-prefix=/tmp -nv 2>&1 | cut -d\" -f2)
-TOOLBOX_TGZ=$(wget https://download-cf.jetbrains.com/toolbox/jetbrains-toolbox-1.17.6802.tar.gz --directory-prefix=/tmp -nv 2>&1 | cut -d\" -f2)
+TERMINUS_RPM=$(wget --continue --directory-prefix=/tmp -nv https://github.com/Eugeny/terminus/releases/download/v1.0.112/terminus-1.0.112-linux.rpm 2>&1 | cut -d\" -f2)
+GITKRAKEN_RPM=$(wget --continue --directory-prefix=/tmp -nv https://release.axocdn.com/linux/gitkraken-amd64.rpm 2>&1 | cut -d\" -f2)
+TOOLBOX_TGZ=$(wget --continue --directory-prefix=/tmp -nv https://download-cf.jetbrains.com/toolbox/jetbrains-toolbox-1.17.7234.tar.gz 2>&1 | cut -d\" -f2)
 USER_BIN=~/bin
 
 test ! -d $USER_BIN && mkdir $USER_BIN
-tar -xzv --strip-components=1 -C $USER_BIN -f $TOOLBOX_TGZ
+tar -xzv --strip-components=1 -C /tmp -f $TOOLBOX_TGZ
+
+(/tmp/jetbrains-toolbox &)
 
 # setup vscode repo
 sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
@@ -26,7 +28,7 @@ mkdir --parent ~/.config/Code/User
 cat <<EOF > ~/.config/Code/User/settings.json
 {
     "editor.fontFamily": "'Fira Code','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
-    "editor.fontLigatures": true,
+    "editor.fontLigatures": false,
     "editor.formatOnSave": true,
     "telemetry.enableTelemetry": false,
     "telemetry.enableCrashReporter": false
