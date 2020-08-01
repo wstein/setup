@@ -10,6 +10,8 @@ USER_BIN=~/bin
 test ! -d $USER_BIN && mkdir $USER_BIN
 tar -xzv --strip-components=1 -C /tmp -f $TOOLBOX_TGZ
 
+ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa
+
 (/tmp/jetbrains-toolbox &)
 
 # setup vscode repo
