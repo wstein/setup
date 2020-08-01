@@ -18,8 +18,7 @@ sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.m
 
 sudo dnf -y install hub gitk git-gui hub htop screen tmux aria2 kitty meld neovim xrdp keepassxc podman-compose buildah skopeo toolbox code fira-code-fonts zsh java-11-openjdk-devel putty $GITKRAKEN_RPM
 
-sudo chsh -s $(which zsh) $USERNAME
-
+sudo lchsh $USERNAME <<< $(which zsh)
 sudo systemctl enable --now xrdp
 sudo firewall-cmd --add-port=3389/tcp --permanent
 sudo firewall-cmd --reload
