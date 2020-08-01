@@ -18,6 +18,9 @@ sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.m
 
 sudo dnf -y install hub gitk git-gui hub htop screen tmux aria2 kitty meld neovim xrdp keepassxc podman-compose buildah skopeo toolbox code fira-code-fonts zsh java-11-openjdk-devel putty $GITKRAKEN_RPM
 
+dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+dnf -y install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+
 sudo lchsh $USERNAME <<< $(which zsh)
 sudo systemctl enable --now xrdp
 sudo firewall-cmd --add-port=3389/tcp --permanent
