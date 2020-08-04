@@ -12,6 +12,9 @@ tar -xzv --strip-components=1 -C /tmp -f $TOOLBOX_TGZ
 
 ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa
 
+# don't use Wayland (obs does not support Wayland)
+sudo sed -e "s/#WaylandEnable/WaylandEnable=false/" /etc/gdm/custom.conf
+
 (/tmp/jetbrains-toolbox &)
 
 # setup vscode repo
