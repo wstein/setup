@@ -2,59 +2,108 @@
 
 set -e
 
-#TERMINUS_RPM=$(wget --continue --directory-prefix=/tmp -nv https://github.com/Eugeny/terminus/releases/download/v1.0.112/terminus-1.0.112-linux.rpm 2>&1 | cut -d\" -f2)
-GITKRAKEN_RPM=$(wget --continue --directory-prefix=/tmp -nv https://release.axocdn.com/linux/gitkraken-amd64.rpm 2>&1 | cut -d\" -f2)
-TOOLBOX_TGZ=$(wget --continue --directory-prefix=/tmp -nv https://download-cf.jetbrains.com/toolbox/jetbrains-toolbox-1.17.7275.tar.gz 2>&1 | cut -d\" -f2)
-USER_BIN=~/bin
+main() {
+  install_linux_packages
+  base_configuration
+  install_jetbrains_toolbox
+  install_gitkraken
+  config_xrdp
+  config_vscode
+  config_zsh
+}
 
-test ! -d $USER_BIN && mkdir $USER_BIN
-tar -xzv --strip-components=1 -C /tmp -f $TOOLBOX_TGZ
+install_linux_packages() {
+  echo installing linux packages...
 
-ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa
+  # setup vscode repo
+  sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+  sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
 
-# don't use Wayland (obs does not support Wayland)
-sudo sed -e "s/#WaylandEnable/WaylandEnable=false/" /etc/gdm/custom.conf
+  # setup rpmfusion repo
+  dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+  dnf -y install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
-(/tmp/jetbrains-toolbox &)
+  sudo dnf -y update
+  sudo dnf -y install openssh wget curl libuser hub gitk git-gui hub htop screen tmux aria2 kitty jq meld neovim ffmpeg GraphicsMagick gnome-tweak-tool obs-studio xrdp keepassxc podman-compose buildah skopeo toolbox code fira-code-fonts zsh java-11-openjdk-devel putty
 
-# setup vscode repo
-sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+  # create nvim to vim link
+  ln -s /usr/bin/nvim /usr/local/bin/vim
+}
 
-sudo dnf -y install gitk git-gui hub htop screen tmux aria2 kitty jq meld neovim ffmpeg GraphicsMagick gnome-tweak-tool obs-studio xrdp keepassxc podman-compose buildah skopeo toolbox code fira-code-fonts zsh java-11-openjdk-devel putty $GITKRAKEN_RPM
+base_configuration() {
+  echo doing base configuration...
 
-ln -s /usr/bin/nvim /usr/local/bin/vim
+  # check to create ~/bin
+  test ! -d ~/bin && mkdir ~/bin
 
-dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-dnf -y install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+  ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa
 
-sudo lchsh $USERNAME <<< $(which zsh)
-sudo systemctl enable --now xrdp
-sudo firewall-cmd --add-port=3389/tcp --permanent
-sudo firewall-cmd --reload
+  # don't use Wayland (obs does not support Wayland)
+  if [ -f /etc/gdm/custom.conf ]; then
+    sudo sed -e "s/#WaylandEnable/WaylandEnable=false/" /etc/gdm/custom.conf
+  fi
+}
 
-mkdir --parent ~/.config/Code/User
-cat <<EOF > ~/.config/Code/User/settings.json
+install_jetbrains_toolbox() {
+  echo installing Jetbrains Toolbox...
+
+  wget --continue --output-document=/tmp/jetbrains-toolbox.tgz https://download-cf.jetbrains.com/toolbox/jetbrains-toolbox-1.17.7275.tar.gz # https://download.jetbrains.com/toolbox/jetbrains-toolbox-1.17.7391.tar.gz
+  tar -xzv --strip-components=1 -C /tmp -f /tmp/jetbrains-toolbox.tgz
+
+  # jetbrains-toolbox will automatically toolbox to ~/.local/share/...
+  (/tmp/jetbrains-toolbox &)
+}
+
+install_gitkraken() {
+  echo installing Gitkraken
+  wget --continue --output-document=/tmp/gitkraken-amd64.rpm https://release.axocdn.com/linux/gitkraken-amd64.rpm
+  sudo dnf -y install /tmp/gitkraken-amd64.rpm
+}
+
+config_xrdp() {
+  echo configuring xrdp...
+  sudo systemctl enable --now xrdp
+  sudo firewall-cmd --add-port=3389/tcp --permanent
+  sudo firewall-cmd --reload
+}
+
+config_vscode() {
+  echo configuring VSCode...
+
+  mkdir --parent ~/.config/Code/User
+  cat >~/.config/Code/User/settings.json <<EOF
 {
     "editor.fontFamily": "'Fira Code','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
-    "editor.fontLigatures": false,
+    "editor.fontLigatures": true,
     "editor.formatOnSave": true,
     "telemetry.enableTelemetry": false,
     "telemetry.enableCrashReporter": false
 }
 EOF
+}
 
-curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh && 
-sed -ie "s/^ZSH_THEME=\".*\"/ZSH_THEME=\"avit\"/" ~/.zshrc &&
-sed -ie "s/^plugins=\".*\"/plugins=\"(git docker docker-compose)\"/" ~/.zshrc
+config_zsh() {
+  echo configuring zsh...
 
-cat >>~/.zshrc <<EOF
+  sudo lchsh $USERNAME <<<$(command -v zsh)
+
+  curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
+  sed -ie "s/^ZSH_THEME=\".*\"/ZSH_THEME=\"avit\"/" ~/.zshrc
+  sed -ie "s/^plugins=\".*\"/plugins=\"(git docker docker-compose)\"/" ~/.zshrc
+
+  echo "font_family      Fira Code Regular" >~/.config/kitty/kitty.conf
+
+  cat >>~/.zshrc <<EOF
 
 # kitty comes with completion for the kitty command for popular shells like zsh.
-autoload -Uz compinit
-compinit
-# Completion for kitty
-kitty + complete setup zsh | source /dev/stdin
-EOF
+if [ $(command -v kitty) ]; then
+    autoload -Uz compinit
+    compinit
 
-# sed -i -e "s/# font_family.*/font_family      Fira Code Regular/" ~/.config/kitty/kitty.conf
+    # Completion for kitty
+    kitty + complete setup zsh | source /dev/stdin
+fi
+EOF
+}
+
+main "$*"
