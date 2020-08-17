@@ -2,29 +2,34 @@
 
 set -e
 
+PACKAGES="sudo gpg wget curl libuser hub gitk git-gui hub htop screen tmux aria2 kitty jq meld neovim ffmpeg  gnome-tweak-tool obs-studio xrdp keepassxc zsh  putty"
+PACKAGES_DEBIAN="graphicsmagick fonts-firacode openjdk-11-jdkdocker openssh-client docker-compose apt-transport-https"
+PACKAGES_FEDORA="GraphicsMagick fira-code-fonts java-11-openjdk-devel openssh podman-compose buildah skopeo toolbox "
+
+
 main() {
-  install_linux_packages
+  # evaluates to one of apt, yum, unknown
+  PKG_MANAGER=$( { command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev )
+
+  install_packages_$PKG_MANAGER
   base_configuration
   install_jetbrains_toolbox
   install_gitkraken
-  config_xrdp
+  install_vscode_$PKG_MANAGER
+  #config_xrdp
   config_vscode
   config_zsh
 }
 
-install_linux_packages() {
+install_packages_yum() {
   echo installing linux packages...
-
-  # setup vscode repo
-  sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-  sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
 
   # setup rpmfusion repo
   dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
   dnf -y install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
   sudo dnf -y update
-  sudo dnf -y install openssh wget curl libuser hub gitk git-gui hub htop screen tmux aria2 kitty jq meld neovim ffmpeg GraphicsMagick gnome-tweak-tool obs-studio xrdp keepassxc podman-compose buildah skopeo toolbox code fira-code-fonts zsh java-11-openjdk-devel putty
+  sudo dnf -y install $PACKAGES $PACKAGES_FEDORA
 
   # create nvim to vim link
   ln -s /usr/bin/nvim /usr/local/bin/vim
@@ -42,6 +47,17 @@ base_configuration() {
   if [ -f /etc/gdm/custom.conf ]; then
     sudo sed -e "s/#WaylandEnable/WaylandEnable=false/" /etc/gdm/custom.conf
   fi
+}
+
+install_vscode_yum() {
+  echo installing Visual Studio Code...
+
+  # setup vscode repo
+  sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+  sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+
+  sudo dnf -y update
+  sudo dnf -y install code
 }
 
 install_jetbrains_toolbox() {
