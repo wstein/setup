@@ -26,11 +26,15 @@ PACKAGES_FEDORA="$PACKAGES GraphicsMagick fira-code-fonts java-11-openjdk-devel 
 main() {
   install_packages_$PKG_MANAGER
   base_configuration
-  install_jetbrains_toolbox
-  install_gitkraken
-  install_vscode_$PKG_MANAGER
-  config_vscode
   config_zsh
+
+  # GUI installed?
+  if [ -n $XDG_CURRENT_DESKTOP ]; then
+    install_jetbrains_toolbox
+    install_gitkraken
+    install_vscode_$PKG_MANAGER
+    config_vscode
+  fi
 }
 
 install_packages_apt() {
@@ -59,8 +63,11 @@ base_configuration() {
   test ! -d ~/bin && mkdir ~/bin
 
   # create nvim to vim link
-  ln -s /usr/bin/nvim /usr/local/bin/vim
+  if [ -z $(command -v vim) ]; then
+    ln -s /usr/bin/nvim /usr/local/bin/vim
+  fi
 
+  # create ssh key
   if [ ! -f ~/.ssh/id_rsa ]; then
     ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa
   fi
