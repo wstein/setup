@@ -150,14 +150,17 @@ EOF
 config_zsh() {
   echo configuring zsh...
 
-  # sudo lchsh $USERNAME <<<$(command -v zsh)
+  command -v zsh | sudo lchsh $USERNAME
 
-  curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
+  if [ ! -d ~/.oh-my-zsh ]; then
+    curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
+  fi
+
   sed -ie "s/^ZSH_THEME=\".*\"/ZSH_THEME=\"avit\"/" ~/.zshrc
   sed -ie "s/^plugins=\".*\"/plugins=\"(git docker docker-compose)\"/" ~/.zshrc
 
   if [ ! -d ~/.config/kitty ]; then
-    mkdir ~/.config/kitty
+    mkdir --parents ~/.config/kitty
     echo "font_family      Fira Code Regular" >~/.config/kitty/kitty.conf
   fi
 
