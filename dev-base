@@ -5,7 +5,7 @@ set -e
 # evaluates to one of apt, yum, unknown
 PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
 
-PACKAGES="gpg wget curl libuser hub htop screen tmux aria2 jq neovim ffmpeg zsh"
+PACKAGES="gpg wget curl libuser hub htop screen tmux aria2 jq neovim ffmpeg zsh graphviz"
 
 # GUI installed?
 if [ -n $XDG_CURRENT_DESKTOP ]; then
