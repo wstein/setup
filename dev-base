@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/dash
 
 # Usage:
 # curl -sL raw.github.com/wstein/setup/dev-base | sh
@@ -11,12 +11,12 @@ PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut 
 PACKAGES="gpg wget curl libuser hub htop screen tmux aria2 jq neovim ffmpeg zsh graphviz"
 
 # GUI installed?
-if [ -n $XDG_CURRENT_DESKTOP ]; then
+if [ -n "$XDG_CURRENT_DESKTOP" ]; then
   PACKAGES="$PACKAGES gitk git-gui kitty meld keepassxc putty"
 fi
 
 # Gnome installed?
-if [[ $XDG_CURRENT_DESKTOP == "GNOME" ]]; then
+if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
   PACKAGES="$PACKAGES gnome-tweak-tool"
 fi
 
@@ -29,7 +29,7 @@ main() {
   config_zsh
 
   # GUI installed?
-  if [ -n $XDG_CURRENT_DESKTOP ]; then
+  if [ -n "$XDG_CURRENT_DESKTOP" ]; then
     install_jetbrains_toolbox
     install_gitkraken
     install_vscode_$PKG_MANAGER
@@ -63,7 +63,7 @@ base_configuration() {
   test ! -d ~/bin && mkdir ~/bin
 
   # create nvim to vim link
-  if [ -z $(command -v vim) ]; then
+  if [ -z "$(command -v vim)" ]; then
     ln -s /usr/bin/nvim /usr/local/bin/vim
   fi
 
