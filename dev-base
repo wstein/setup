@@ -1,7 +1,7 @@
 #!/bin/dash
 
 # Usage:
-# curl -sL raw.github.com/wstein/setup/dev-base | sh
+# curl -sL raw.github.com/wstein/setup/master/dev-base | sh
 
 set -e
 
@@ -156,7 +156,10 @@ config_zsh() {
   sed -ie "s/^ZSH_THEME=\".*\"/ZSH_THEME=\"avit\"/" ~/.zshrc
   sed -ie "s/^plugins=\".*\"/plugins=\"(git docker docker-compose)\"/" ~/.zshrc
 
-  echo "font_family      Fira Code Regular" >~/.config/kitty/kitty.conf
+  if [ ! -d ~/.config/kitty ]; then
+    mkdir ~/.config/kitty
+    echo "font_family      Fira Code Regular" >~/.config/kitty/kitty.conf
+  fi
 
   cat >>~/.zshrc <<EOF
 
