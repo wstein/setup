@@ -29,6 +29,8 @@ main() {
   install_packages_$PKG_MANAGER
   base_configuration
   config_zsh
+  install_git_flow
+  install_git_toolbelt
 
   # GUI installed?
   if [ -n "$XDG_CURRENT_DESKTOP" ]; then
@@ -132,6 +134,16 @@ install_gitkraken_yum() {
   sudo yum -y install /tmp/gitkraken-amd64.rpm
 }
 
+install_git_flow() {
+  pushd /tmp
+  curl -sL https://raw.githubusercontent.com/petervanderdoes/gitflow-avh/develop/contrib/gitflow-installer.sh | sudo bash -s install stable
+  popd
+}
+
+install_git_toolbelt() {
+  curl -sL https://github.com/nvie/git-toolbelt/archive/v1.5.0.tar.gz | sudo tar xz --strip-components=1 --directory=/usr/local/bin/
+}
+
 config_vscode() {
   echo configuring VSCode...
 
@@ -157,7 +169,7 @@ config_zsh() {
   fi
 
   sed -ie "s/^ZSH_THEME=\".*\"/ZSH_THEME=\"avit\"/" ~/.zshrc
-  sed -ie "s/^plugins=\".*\"/plugins=\"(git docker docker-compose)\"/" ~/.zshrc
+  sed -ie "s/^plugins=\".*\"/plugins=\"(git git-extras git-flow github docker docker-compose)\"/" ~/.zshrc
 
   if [ ! -d ~/.config/kitty ]; then
     mkdir --parents ~/.config/kitty
