@@ -23,7 +23,7 @@ if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
 fi
 
 PACKAGES_DEBIAN="$PACKAGES graphicsmagick fonts-firacode openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
-PACKAGES_FEDORA="$PACKAGES GraphicsMagick fira-code-fonts java-11-openjdk-devel openssh podman-compose buildah skopeo toolbox"
+PACKAGES_FEDORA="$PACKAGES GraphicsMagick fira-code-fonts java-11-openjdk-devel openssh podman-compose podman-docker buildah skopeo toolbox"
 
 main() {
   install_packages_$PKG_MANAGER
