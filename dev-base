@@ -173,7 +173,7 @@ config_zsh() {
   if [ ! -d ~/.oh-my-zsh ]; then
     curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
     sed -ie "s/^ZSH_THEME=\".*\"/ZSH_THEME=\"avit\"/" ~/.zshrc
-    sed -ie "s/^plugins=\".*\"/plugins=\"(github git git-flow git-extras docker docker-compose)\" # order of git-extras after git-flow is important/" ~/.zshrc
+    sed -ie "s/^plugins=(.*/plugins=(github git git-flow git-extras docker docker-compose)    # order of git-extras after git-flow is important/" ~/.zshrc
   fi
 
   if [ ! -d ~/.config/kitty ]; then
