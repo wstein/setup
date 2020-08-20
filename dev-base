@@ -28,9 +28,9 @@ main() {
 
   base_configuration
   create_bin_folder
-  config_zsh
   install_git_flow
   install_git_toolbelt
+  config_zsh
 
   # GUI installed?
   if [ -n "$XDG_CURRENT_DESKTOP" ]; then
