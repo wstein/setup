@@ -85,6 +85,11 @@ base_configuration() {
   if [ -f /etc/gdm/custom.conf ]; then
     sudo sed -e "s/#WaylandEnable/WaylandEnable=false/" /etc/gdm/custom.conf
   fi
+
+  # add $HOME/bin and $HOME/.local/bin to .profile (for Debian distros)
+  if [ -n $HOME/.profile ]; then
+    echo "PATH=\$HOME/bin:\$HOME/.local/bin/:\$PATH" >>$HOME/.profile
+  fi
 }
 
 create_bin_folder() {
