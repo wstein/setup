@@ -1,4 +1,4 @@
-#!/bin/dash
+#!/bin/sh
 
 # Usage:
 # curl -sL raw.github.com/wstein/setup/master/dev-base | sh
@@ -27,7 +27,9 @@ PACKAGES_FEDORA="$PACKAGES GraphicsMagick fira-code-fonts java-11-openjdk-devel 
 
 main() {
   install_packages_$PKG_MANAGER
+
   base_configuration
+  create_bin_folder
   config_zsh
   install_git_flow
   install_git_toolbelt
@@ -69,9 +71,6 @@ install_packages_yum() {
 base_configuration() {
   echo doing base configuration...
 
-  # check to create ~/bin
-  test ! -d ~/bin && mkdir ~/bin
-
   # create nvim to vim link
   if [ -z "$(command -v vim)" ]; then
     ln -s /usr/bin/nvim /usr/local/bin/vim
@@ -86,6 +85,19 @@ base_configuration() {
   if [ -f /etc/gdm/custom.conf ]; then
     sudo sed -e "s/#WaylandEnable/WaylandEnable=false/" /etc/gdm/custom.conf
   fi
+}
+
+create_bin_folder() {
+  echo creating bin folder...
+
+  # check to create ~/bin
+  test ! -d $HOME/bin && mkdir $HOME/bin
+
+  cd $HOME/bin
+  git init
+  git remote add origin https://github.com/wstein/bin
+  git pull origin master
+  cd $HOME
 }
 
 install_vscode_apt() {
@@ -135,9 +147,9 @@ install_gitkraken_yum() {
 }
 
 install_git_flow() {
-  pushd /tmp
+  cd /tmp
   curl -sL https://raw.githubusercontent.com/petervanderdoes/gitflow-avh/develop/contrib/gitflow-installer.sh | sudo bash -s install stable
-  popd
+  cd $HOME
 }
 
 install_git_toolbelt() {
@@ -166,10 +178,9 @@ config_zsh() {
 
   if [ ! -d ~/.oh-my-zsh ]; then
     curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
+    sed -ie "s/^ZSH_THEME=\".*\"/ZSH_THEME=\"avit\"/" ~/.zshrc
+    sed -ie "s/^plugins=\".*\"/plugins=\"(github git git-flow git-extras docker docker-compose)\" # order of git-extras after git-flow is important/" ~/.zshrc
   fi
-
-  sed -ie "s/^ZSH_THEME=\".*\"/ZSH_THEME=\"avit\"/" ~/.zshrc
-  sed -ie "s/^plugins=\".*\"/plugins=\"(git git-extras git-flow github docker docker-compose)\"/" ~/.zshrc
 
   if [ ! -d ~/.config/kitty ]; then
     mkdir --parents ~/.config/kitty
