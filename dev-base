@@ -8,7 +8,7 @@ set -e
 # evaluates to one of apt, yum, unknown
 PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
 
-PACKAGES="gpg wget curl libuser hub htop screen tmux aria2 jq neovim ffmpeg zsh graphviz"
+PACKAGES="gpg wget curl libuser hub git tig htop screen tmux aria2 jq neovim ffmpeg zsh graphviz"
 
 # GUI installed?
 if [ -n "$XDG_CURRENT_DESKTOP" ]; then
@@ -23,14 +23,18 @@ fi
 PACKAGES_DEBIAN="$PACKAGES graphicsmagick fonts-firacode openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
 PACKAGES_FEDORA="$PACKAGES GraphicsMagick fira-code-fonts java-11-openjdk-devel openssh podman-compose podman-docker buildah skopeo toolbox"
 
+# do not add git-flow, it does not well integrate with git-extras!
+ZSH_PLUGINs="github git git-extras docker docker-compose tmux"
+ZSH_THEME="avit"
+
 main() {
   install_packages_$PKG_MANAGER
 
   base_configuration
   create_bin_folder
+  config_zsh
   install_git_flow
   install_git_toolbelt
-  config_zsh
 
   # GUI installed?
   if [ -n "$XDG_CURRENT_DESKTOP" ]; then
@@ -77,7 +81,11 @@ base_configuration() {
 
   # add $HOME/bin and $HOME/.local/bin to .profile (for Debian distros)
   if [ -n $HOME/.profile ]; then
-    echo "PATH=\$HOME/bin:\$HOME/.local/bin/:\$PATH" >>$HOME/.profile
+    cat <<EOF >>$HOME/.profile
+if [ -d "$HOME/bin" ] ; then
+  PATH="$HOME/bin:$PATH"
+fi
+EOF
   fi
 }
 
