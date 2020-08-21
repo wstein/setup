@@ -24,7 +24,7 @@ PACKAGES_DEBIAN="$PACKAGES graphicsmagick fonts-firacode openjdk-11-jdk docker o
 PACKAGES_FEDORA="$PACKAGES GraphicsMagick fira-code-fonts java-11-openjdk-devel openssh podman-compose podman-docker buildah skopeo toolbox"
 
 # do not add git-flow, it does not well integrate with git-extras!
-ZSH_PLUGINs="github git git-extras docker docker-compose tmux"
+ZSH_PLUGINS="github git git-extras tig docker docker-compose tmux"
 ZSH_THEME="avit"
 
 main() {
@@ -181,7 +181,7 @@ config_zsh() {
   if [ ! -d ~/.oh-my-zsh ]; then
     curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
     sed -ie "s/^ZSH_THEME=\".*\"/ZSH_THEME=\"avit\"/" ~/.zshrc
-    sed -ie "s/^plugins=(.*/plugins=(github git git-flow git-extras docker docker-compose)    # order of git-extras after git-flow is important/" ~/.zshrc
+    sed -ie "s/^plugins=\".*\"/plugins=($ZSH_PLUGINS)/" ~/.zshrc
   fi
 
   if [ ! -d ~/.config/kitty ]; then
