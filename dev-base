@@ -48,6 +48,7 @@ main() {
 install_packages_apt() {
   echo installing linux packages...
 
+  sudo apt -y update
   sudo apt -y install $PACKAGES_DEBIAN
 }
 
