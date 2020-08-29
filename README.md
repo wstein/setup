@@ -16,7 +16,7 @@ git checkout current
 
 ## Fedora: 
 ```sh
-docker run -it --rm -v $HOME/setup/dev-base:/tmp/dev-base:ro --entrypoint=/usr/bin/sh fedora "/tmp/dev-base && zsh"
+docker run -it --rm -v $HOME/setup/dev-base:/tmp/dev-base:ro --entrypoint=/usr/bin/sh fedora -c "/tmp/dev-base && zsh"
 ```
 
 ## Debian:
