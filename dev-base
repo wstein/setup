@@ -1,14 +1,22 @@
 #!/bin/sh
 
 # Usage:
-# curl -sL raw.github.com/wstein/setup/master/dev-base | sh
+#   curl -sL raw.github.com/wstein/setup/master/dev-base | sh
+# or shorter:
+#   curl -sL git.io/dev-based | sh
+# 
+# git clone git://github.com/wstein/setup && cd setup && checkout current
+#
+# check with docker:
+# - Fedora: docker run -it --rm -v /root/setup/dev-base:/tmp/dev-base:ro --entrypoint=/usr/bin/sh fedora -c "/tmp/dev-base && zsh"                                     
+# - Debian: docker run -it --rm -v /root/setup/dev-base:/tmp/dev-base:ro --entrypoint=sh debian -c "apt update && apt install -y sudo && /tmp/dev-base && zsh"
 
 set -e
 
 # evaluates to one of apt, yum, unknown
 PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
 
-PACKAGES="bash-completion gpg wget curl libuser hub git tig fossil pv htop screen tmux aria2 jq neovim ffmpeg zsh graphviz"
+PACKAGES="bash-completion gpg wget curl libuser flatpak hub git tig fossil pv htop screen tmux aria2 jq neovim ffmpeg zsh graphviz"
 
 # GUI installed?
 if [ -n "$XDG_CURRENT_DESKTOP" ]; then
