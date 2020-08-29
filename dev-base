@@ -204,7 +204,7 @@ config_zsh() {
 		echo "font_family			Fira Code Regular" >~/.config/kitty/kitty.conf
 	fi
 
-	cat >>~/.zshrc <<EOF
+	cat >>~/.zshrc <<-EOF
 
 	# kitty comes with completion for the kitty command for popular shells like zsh.
 	if [ $(command -v kitty) ]; then
