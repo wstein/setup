@@ -5,7 +5,7 @@
 # or shorter:
 #   curl -sL git.io/dev-based | sh
 # 
-# git clone git://github.com/wstein/setup && cd setup && checkout current
+# git clone git://github.com/wstein/setup && cd setup && git checkout current
 #
 # check with docker:
 # - Fedora: docker run -it --rm -v /root/setup/dev-base:/tmp/dev-base:ro --entrypoint=/usr/bin/sh fedora -c "/tmp/dev-base && zsh"                                     
