@@ -1,14 +1,14 @@
 #!/bin/sh
 
 # Usage:
-#   curl -sL raw.github.com/wstein/setup/master/dev-base | sh
+#	 curl -sL raw.github.com/wstein/setup/master/dev-base | sh
 # or shorter:
-#   curl -sL git.io/dev-based | sh
+#	 curl -sL git.io/dev-based | sh
 # 
 # git clone git://github.com/wstein/setup && cd setup && git checkout current
 #
 # check with docker:
-# - Fedora: docker run -it --rm -v /root/setup/dev-base:/tmp/dev-base:ro --entrypoint=/usr/bin/sh fedora -c "/tmp/dev-base && zsh"                                     
+# - Fedora: docker run -it --rm -v /root/setup/dev-base:/tmp/dev-base:ro --entrypoint=/usr/bin/sh fedora -c "/tmp/dev-base && zsh"																		 
 # - Debian: docker run -it --rm -v /root/setup/dev-base:/tmp/dev-base:ro --entrypoint=sh debian -c "apt update && apt install -y sudo && /tmp/dev-base && zsh"
 
 set -e
@@ -20,12 +20,12 @@ PACKAGES="bash-completion gpg wget curl libuser flatpak hub git tig fossil pv ht
 
 # GUI installed?
 if [ -n "$XDG_CURRENT_DESKTOP" ]; then
-  PACKAGES="$PACKAGES gitk git-gui kitty meld keepassxc putty"
+	PACKAGES="$PACKAGES gitk git-gui kitty meld keepassxc putty"
 fi
 
 # Gnome installed?
 if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
-  PACKAGES="$PACKAGES gnome-tweak-tool"
+	PACKAGES="$PACKAGES gnome-tweak-tool"
 fi
 
 PACKAGES_DEBIAN="$PACKAGES graphicsmagick fonts-firacode openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
@@ -36,182 +36,185 @@ ZSH_PLUGINS="github git git-extras tig docker docker-compose tmux"
 ZSH_THEME="avit"
 
 main() {
-  install_packages_$PKG_MANAGER
+	install_packages_$PKG_MANAGER
 
-  base_configuration
-  create_bin_folder
-  config_zsh
-  install_git_flow
-  install_git_toolbelt
+	base_configuration
+	create_bin_folder
+	config_zsh
+	install_git_flow
+	install_git_toolbelt
 
-  # GUI installed?
-  if [ -n "$XDG_CURRENT_DESKTOP" ]; then
-    install_jetbrains_toolbox
-    install_gitkraken_$PKG_MANAGER
-    install_vscode_$PKG_MANAGER
-    config_vscode
-  fi
+	# GUI installed?
+	if [ -n "$XDG_CURRENT_DESKTOP" ]; then
+		install_jetbrains_toolbox
+		install_gitkraken_$PKG_MANAGER
+		install_vscode_$PKG_MANAGER
+		config_vscode
+	fi
 }
 
 install_packages_apt() {
-  echo installing linux packages...
+	echo installing linux packages...
 
-  sudo apt -y update
-  sudo apt -y install $PACKAGES_DEBIAN
+	sudo apt -y update
+	sudo apt -y install $PACKAGES_DEBIAN
 }
 
 install_packages_yum() {
-  echo installing linux packages...
+	echo installing linux packages...
 
-  # setup rpmfusion repo
-  sudo yum -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-  sudo yum -y install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+	# setup rpmfusion repo
+	sudo yum -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+	sudo yum -y install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
-  sudo yum -y install $PACKAGES_FEDORA
+	sudo yum -y install $PACKAGES_FEDORA
 
-  # Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
-  sudo touch /etc/containers/nodocker
+	# Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+	sudo touch /etc/containers/nodocker
 }
 
 base_configuration() {
-  echo doing base configuration...
+	echo doing base configuration...
 
-  # create nvim to vim link
-  if [ -z "$(command -v vim)" ]; then
-    sudo ln -s /usr/bin/nvim /usr/local/bin/vim
-  fi
+	# create nvim to vim link
+	if [ -z "$(command -v vim)" ]; then
+		sudo ln -s /usr/bin/nvim /usr/local/bin/vim
+	fi
 
-  # create ssh key
-  if [ ! -f ~/.ssh/id_rsa ]; then
-    ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa
-  fi
+	# create ssh key
+	if [ ! -f ~/.ssh/id_rsa ]; then
+		ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa
+	fi
 
-  # don't use Wayland (obs does not support Wayland)
-  if [ -f /etc/gdm/custom.conf ]; then
-    sudo sed -e "s/#WaylandEnable/WaylandEnable=false/" /etc/gdm/custom.conf
-  fi
+	# don't use Wayland (obs does not support Wayland)
+	if [ -f /etc/gdm/custom.conf ]; then
+		sudo sed -e "s/#WaylandEnable/WaylandEnable=false/" /etc/gdm/custom.conf
+	fi
 
-  # add $HOME/bin and $HOME/.local/bin to .profile (for Debian distros)
-  if [ -n $HOME/.profile ]; then
-    cat <<EOF >>$HOME/.profile
-if [ -d "$HOME/bin" ] ; then
-  PATH="$HOME/bin:$PATH"
-fi
-EOF
-  fi
+	# add $HOME/bin and $HOME/.local/bin to .profile (for Debian distros)
+	if [ -n $HOME/.profile ]; then
+		cat <<-EOF >>$HOME/.profile
+		if [ -d "$HOME/bin" ] ; then
+			PATH="$HOME/bin:$PATH"
+		fi
+		EOF
+	fi
 }
 
 create_bin_folder() {
-  echo creating bin folder...
+	echo creating bin folder...
 
-  # check to create ~/bin
-  test ! -d $HOME/bin && mkdir $HOME/bin
+	# check to create ~/bin
+	test ! -d $HOME/bin && mkdir $HOME/bin
 
-  cd $HOME/bin
-  git init
-  git remote add origin https://github.com/wstein/bin
-  git pull origin master
-  cd $HOME
+	cd $HOME/bin
+	git init
+	git remote add origin https://github.com/wstein/bin
+	git pull origin master
+	cd $HOME
 }
 
 install_vscode_apt() {
-  echo installing Visual Studio Code...
+	echo installing Visual Studio Code...
 
-  # setup vscode repo
-  curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >packages.microsoft.gpg
-  sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
-  sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+	# setup vscode repo
+	curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >packages.microsoft.gpg
+	sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+	sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 
-  sudo apt-get install apt-transport-https
-  sudo apt-get update
-  sudo apt-get install code
+	sudo apt-get install apt-transport-https
+	sudo apt-get update
+	sudo apt-get install code
 }
 
 install_vscode_yum() {
-  echo installing Visual Studio Code...
+	echo installing Visual Studio Code...
 
-  # setup vscode repo
-  sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-  sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+	# setup vscode repo
+	sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+	sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
 
-  sudo yum -y update
-  sudo yum -y install code
+	sudo yum -y update
+	sudo yum -y install code
 }
 
 install_jetbrains_toolbox() {
-  echo installing Jetbrains Toolbox...
+	echo installing Jetbrains Toolbox...
 
-  wget --continue --output-document=/tmp/jetbrains-toolbox.tgz https://download-cf.jetbrains.com/toolbox/jetbrains-toolbox-1.17.7275.tar.gz # https://download.jetbrains.com/toolbox/jetbrains-toolbox-1.17.7391.tar.gz
-  tar -xzv --strip-components=1 -C /tmp -f /tmp/jetbrains-toolbox.tgz
+	wget --continue --output-document=/tmp/jetbrains-toolbox.tgz https://download-cf.jetbrains.com/toolbox/jetbrains-toolbox-1.17.7275.tar.gz # https://download.jetbrains.com/toolbox/jetbrains-toolbox-1.17.7391.tar.gz
+	tar -xzv --strip-components=1 -C /tmp -f /tmp/jetbrains-toolbox.tgz
 
-  # jetbrains-toolbox will automatically toolbox to ~/.local/share/...
-  (/tmp/jetbrains-toolbox &)
+	# jetbrains-toolbox will automatically toolbox to ~/.local/share/...
+	(/tmp/jetbrains-toolbox &)
 }
 
 install_gitkraken_apt() {
-  echo installing Gitkraken...
-  wget --continue --output-document=/tmp/gitkraken-amd64.deb https://release.gitkraken.com/linux/gitkraken-amd64.deb
-  sudo apt -y install /tmp/gitkraken-amd64.deb
+	echo installing Gitkraken...
+	wget --continue --output-document=/tmp/gitkraken-amd64.deb https://release.gitkraken.com/linux/gitkraken-amd64.deb
+	sudo apt -y install /tmp/gitkraken-amd64.deb
 }
 
 install_gitkraken_yum() {
-  echo installing Gitkraken...
-  wget --continue --output-document=/tmp/gitkraken-amd64.rpm https://release.axocdn.com/linux/gitkraken-amd64.rpm
-  sudo yum -y install /tmp/gitkraken-amd64.rpm
+	echo installing Gitkraken...
+	wget --continue --output-document=/tmp/gitkraken-amd64.rpm https://release.axocdn.com/linux/gitkraken-amd64.rpm
+	sudo yum -y install /tmp/gitkraken-amd64.rpm
 }
 
 install_git_flow() {
-  cd /tmp
-  curl -sL https://raw.githubusercontent.com/petervanderdoes/gitflow-avh/develop/contrib/gitflow-installer.sh | sudo bash -s install stable
-  cd $HOME
+	cd /tmp
+	curl -sL https://raw.githubusercontent.com/petervanderdoes/gitflow-avh/develop/contrib/gitflow-installer.sh | sudo bash -s install stable
+	cd $HOME
 }
 
 install_git_toolbelt() {
-  curl -sL https://github.com/nvie/git-toolbelt/archive/v1.5.0.tar.gz | sudo tar xz --strip-components=1 --directory=/usr/local/bin/
+	curl -sL https://github.com/nvie/git-toolbelt/archive/v1.5.0.tar.gz | sudo tar xz --strip-components=1 --directory=/usr/local/bin/
 }
 
 config_vscode() {
-  echo configuring VSCode...
+	echo configuring VSCode...
 
-  mkdir --parent ~/.config/Code/User
-  cat >~/.config/Code/User/settings.json <<EOF
-{
-    "editor.fontFamily": "'Fira Code','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
-    "editor.fontLigatures": true,
-    "editor.formatOnSave": true,
-    "telemetry.enableTelemetry": false,
-    "telemetry.enableCrashReporter": false
-}
-EOF
+	mkdir --parent ~/.config/Code/User
+	cat >~/.config/Code/User/settings.json <<-EOF
+	{
+			"editor.fontFamily": "'Fira Code','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+			"editor.fontLigatures": true,
+			"editor.formatOnSave": true,
+			"telemetry.enableTelemetry": false,
+			"telemetry.enableCrashReporter": false
+	}
+	EOF
 }
 
 config_zsh() {
-  echo configuring zsh...
+	echo configuring zsh...
 
-  command -v zsh | sudo lchsh $USERNAME
+	command -v zsh | sudo lchsh $USERNAME
 
-  if [ ! -d ~/.oh-my-zsh ]; then
-    curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
-    sed -ie "s/^ZSH_THEME=\".*\"/ZSH_THEME=\"avit\"/" ~/.zshrc
-    sed -ie "s/^plugins=\".*\"/plugins=($ZSH_PLUGINS)/" ~/.zshrc
-  fi
+	curl -L git.io/antigen > antigen.zsh
 
-  if [ ! -d ~/.config/kitty ]; then
-    mkdir --parents ~/.config/kitty
-    echo "font_family      Fira Code Regular" >~/.config/kitty/kitty.conf
-  fi
 
-  cat >>~/.zshrc <<EOF
+	if [ ! -d ~/.oh-my-zsh ]; then
+		curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
+		sed -ie "s/^ZSH_THEME=\".*\"/ZSH_THEME=\"avit\"/" ~/.zshrc
+		sed -ie "s/^plugins=\".*\"/plugins=($ZSH_PLUGINS)/" ~/.zshrc
+	fi
 
-# kitty comes with completion for the kitty command for popular shells like zsh.
-if [ $(command -v kitty) ]; then
-    autoload -Uz compinit
-    compinit
+	if [ ! -d ~/.config/kitty ]; then
+		mkdir --parents ~/.config/kitty
+		echo "font_family			Fira Code Regular" >~/.config/kitty/kitty.conf
+	fi
 
-    # Completion for kitty
-    kitty + complete setup zsh | source /dev/stdin
-fi
-EOF
+	cat >>~/.zshrc <<EOF
+
+	# kitty comes with completion for the kitty command for popular shells like zsh.
+	if [ $(command -v kitty) ]; then
+			autoload -Uz compinit
+			compinit
+
+			# Completion for kitty
+			kitty + complete setup zsh | source /dev/stdin
+	fi
+	EOF
 }
 
-main "$*"
+main "$@"
