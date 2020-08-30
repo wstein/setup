@@ -47,8 +47,7 @@ main() {
 	# GUI installed?
 	if [ -n "$XDG_CURRENT_DESKTOP" ]; then
 		install_jetbrains_toolbox
-		install_gitkraken_$PKG_MANAGER
-		install_vscode_$PKG_MANAGER
+		install_flatpak_packages
 		config_vscode
 	fi
 }
@@ -95,6 +94,9 @@ base_configuration() {
 	if [ -f /etc/gdm/custom.conf ]; then
 		sudo sed -e "s/#WaylandEnable/WaylandEnable=false/" /etc/gdm/custom.conf
 	fi
+
+	# setup flatpak
+	flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 	# add $HOME/bin and $HOME/.local/bin to .profile (for Debian distros)
 	if [ -n $HOME/.profile ]; then
@@ -146,23 +148,18 @@ install_vscode_yum() {
 install_jetbrains_toolbox() {
 	echo installing Jetbrains Toolbox...
 
-	wget --continue --output-document=/tmp/jetbrains-toolbox.tgz https://download-cf.jetbrains.com/toolbox/jetbrains-toolbox-1.17.7275.tar.gz # https://download.jetbrains.com/toolbox/jetbrains-toolbox-1.17.7391.tar.gz
+	local DL_LINK=$(curl -sL "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release" | jq -r .TBA[0].downloads.linux.link)
+	wget --continue --output-document=/tmp/jetbrains-toolbox.tgz $DL_LINK
 	tar -xzv --strip-components=1 -C /tmp -f /tmp/jetbrains-toolbox.tgz
 
 	# jetbrains-toolbox will automatically toolbox to ~/.local/share/...
 	(/tmp/jetbrains-toolbox &)
 }
 
-install_gitkraken_apt() {
+install_flatpak_packages() {
 	echo installing Gitkraken...
-	wget --continue --output-document=/tmp/gitkraken-amd64.deb https://release.gitkraken.com/linux/gitkraken-amd64.deb
-	sudo apt -y install /tmp/gitkraken-amd64.deb
-}
-
-install_gitkraken_yum() {
-	echo installing Gitkraken...
-	wget --continue --output-document=/tmp/gitkraken-amd64.rpm https://release.axocdn.com/linux/gitkraken-amd64.rpm
-	sudo yum -y install /tmp/gitkraken-amd64.rpm
+	flatpak install flathub com.axosoft.GitKraken
+	flatpak install flathub com.visualstudio.code
 }
 
 install_git_flow() {
