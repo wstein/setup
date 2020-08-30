@@ -47,7 +47,7 @@ main() {
 	# GUI installed?
 	if [ -n "$XDG_CURRENT_DESKTOP" ]; then
 		install_jetbrains_toolbox
-		install_flatpak_packages
+    		install_vscode_$PKG_MANAGER
 		config_vscode
 	fi
 }
@@ -159,9 +159,7 @@ install_jetbrains_toolbox() {
 install_flatpak_packages() {
 	echo installing Gitkraken...
 	flatpak install flathub com.axosoft.GitKraken
-	flatpak install flathub com.visualstudio.code
-	
-	(flatpak run com.visualstudio.code&)
+)
 	(flatpak run com.axosoft.GitKraken&)
 }
 
