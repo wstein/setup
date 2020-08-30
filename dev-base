@@ -153,13 +153,16 @@ install_jetbrains_toolbox() {
 	tar -xzv --strip-components=1 -C /tmp -f /tmp/jetbrains-toolbox.tgz
 
 	# jetbrains-toolbox will automatically toolbox to ~/.local/share/...
-	(/tmp/jetbrains-toolbox &)
+	(/tmp/jetbrains-toolbox&)
 }
 
 install_flatpak_packages() {
 	echo installing Gitkraken...
 	flatpak install flathub com.axosoft.GitKraken
 	flatpak install flathub com.visualstudio.code
+	
+	(flatpak run com.visualstudio.code&)
+	(flatpak run com.axosoft.GitKraken&)
 }
 
 install_git_flow() {
