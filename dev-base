@@ -32,7 +32,7 @@ PACKAGES_DEBIAN="$PACKAGES graphicsmagick fonts-firacode openjdk-11-jdk docker o
 PACKAGES_FEDORA="$PACKAGES GraphicsMagick fira-code-fonts java-11-openjdk-devel openssh podman-compose podman-docker buildah skopeo toolbox"
 
 # do not add git-flow, it does not well integrate with git-extras!
-ZSH_PLUGINS="github git git-extras tig docker docker-compose tmux"
+#ZSH_PLUGINS="github git git-extras tig docker docker-compose tmux"
 ZSH_THEME="avit"
 
 main() {
@@ -76,6 +76,11 @@ install_packages_yum() {
 base_configuration() {
 	echo doing base configuration...
 
+	# crate $HOME/.local/bin
+	if [ ! -d $HOME/.local/bin ]; then
+		mkdir --parents $HOME/.local/bin
+	fi
+	
 	# create nvim to vim link
 	if [ -z "$(command -v vim)" ]; then
 		sudo ln -s /usr/bin/nvim /usr/local/bin/vim
@@ -188,16 +193,7 @@ config_vscode() {
 config_zsh() {
 	echo configuring zsh...
 
-	command -v zsh | sudo lchsh $USERNAME
-
-	curl -L git.io/antigen > antigen.zsh
-
-
-	if [ ! -d ~/.oh-my-zsh ]; then
-		curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
-		sed -ie "s/^ZSH_THEME=\".*\"/ZSH_THEME=\"avit\"/" ~/.zshrc
-		sed -ie "s/^plugins=\".*\"/plugins=($ZSH_PLUGINS)/" ~/.zshrc
-	fi
+	curl -L git.io/antigen > $HOME/.local/bin/antigen.zsh
 
 	if [ ! -d ~/.config/kitty ]; then
 		mkdir --parents ~/.config/kitty
@@ -205,16 +201,32 @@ config_zsh() {
 	fi
 
 	cat >>~/.zshrc <<-EOF
+	source $HOME/.local/bin/antigen.zsh
+	
+	# Load the oh-my-zsh's library.
+	antigen use oh-my-zsh
 
-	# kitty comes with completion for the kitty command for popular shells like zsh.
-	if [ $(command -v kitty) ]; then
-			autoload -Uz compinit
-			compinit
+	# Bundles from the default repo (robbyrussell's oh-my-zsh).
+	antigen bundle github
+	antigen bundle git
+	antigen bundle git-extras
+	antigen bundle tig
+	antigen bundle docker
+	antigen bundle docker-compose
+	antigen bundle tmux
+	antigen bundle command-not-found
 
-			# Completion for kitty
-			kitty + complete setup zsh | source /dev/stdin
-	fi
+	# Syntax highlighting bundle.
+	antigen bundle zsh-users/zsh-syntax-highlighting
+
+	# Load the theme.
+	antigen theme $ZSH_THEME
+
+	# Tell Antigen that you're done.
+	antigen apply
 	EOF
+	
+	command -v zsh | sudo lchsh $USERNAME
 }
 
 main "$@"
