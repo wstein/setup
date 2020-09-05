@@ -226,7 +226,7 @@ config_zsh() {
 		antigen apply
 	EOF
 
-	echo /usr/bin/zsh | sudo lchsh "$USERNAME"
+	echo /usr/bin/zsh | sudo lchsh "$(whoami)"
 }
 
 main "$@"
