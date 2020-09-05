@@ -9,17 +9,23 @@ curl -sL raw.github.com/wstein/setup/master/dev-base | sh
 # check with docker:
 ## checkout
 ~~~
-git clone git://github.com/wstein/setup
-cd setup 
-git checkout develop
+git clone --branch=develop git://github.com/wstein/setup $HOME/setup
 ~~~
 
 ## Fedora: 
 ```sh
-docker run -it --rm -v $HOME/setup/dev-base:/tmp/dev-base:ro --entrypoint=/usr/bin/sh fedora -c "/tmp/dev-base && zsh"
+docker run -dt -v $HOME/setup/dev-base:/tmp/dev-base:ro --name fedora fedora
+
+docker exec fedora sh -x /tmp/dev-base
 ```
 
 ## Debian:
 ```sh
-docker run -it --rm -v $HOME/setup/dev-base:/tmp/dev-base:ro --entrypoint=sh debian -c "apt update && apt install -y sudo && /tmp/dev-base && zsh"
+docker run -dt -v $HOME/setup/dev-base:/tmp/dev-base:ro --name debian debian
+
+docker exec debian apt-get update 
+docker exec debian apt-get install -y sudo
+docker exec debian sh -x /tmp/dev-base
+
+docker rm -f debian
 ```
