@@ -47,10 +47,10 @@ main() {
 	# GUI installed?
 	if [ -n "$XDG_CURRENT_DESKTOP" ]; then
 		install_fira_code_nerd_font
-		install_flatpak_packages
 		install_jetbrains_toolbox
 		install_vscode_$PKG_MANAGER
 		config_vscode
+		install_flatpak_packages
 	fi
 }
 
