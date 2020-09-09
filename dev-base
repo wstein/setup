@@ -46,6 +46,7 @@ main() {
 
 	# GUI installed?
 	if [ -n "$XDG_CURRENT_DESKTOP" ]; then
+		install_flatpak_packages
 		install_jetbrains_toolbox
 		install_vscode_$PKG_MANAGER
 		config_vscode
@@ -80,10 +81,8 @@ base_configuration() {
 		mkdir --parents "$HOME/.local/bin"
 	fi
 
-	# create nvim to vim link
-	if [ -z "$(command -v vim)" ]; then
-		sudo ln -s /usr/bin/nvim /usr/local/bin/vim
-	fi
+	# create vim alias
+	echo "alias vim=nvim" | sudo tee -a /etc/profile.d/dev-base-aliases.sh >/dev/null
 
 	# create ssh key
 	if ! [ -f ~/.ssh/id_rsa ]; then
@@ -157,11 +156,11 @@ install_flatpak_packages() {
 	echo installing flatpak packages...
 
 	# setup flatpak repo
-	flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+	sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-	flatpak install -y flathub com.axosoft.GitKraken
-	flatpak install -y flathub org.freeplane.App
-	flatpak install -y flathub io.github.mmstick.FontFinder
+	sudo flatpak install -y flathub com.axosoft.GitKraken flathub org.freeplane.App io.github.mmstick.FontFinder
+	
+	echo "alias gitkraken=com.axosoft.GitKraken" | sudo tee -a /etc/profile.d/dev-base-aliases.sh >/dev/null
 }
 
 install_git_flow() {
