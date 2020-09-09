@@ -28,8 +28,8 @@ if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
 	PACKAGES="$PACKAGES gnome-tweak-tool"
 fi
 
-PACKAGES_DEBIAN="$PACKAGES graphicsmagick fonts-firacode openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
-PACKAGES_FEDORA="$PACKAGES GraphicsMagick fira-code-fonts java-11-openjdk-devel openssh gitui podman-compose podman-docker buildah skopeo toolbox"
+PACKAGES_DEBIAN="$PACKAGES graphicsmagick openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
+PACKAGES_FEDORA="$PACKAGES GraphicsMagick java-11-openjdk-devel openssh gitui podman-compose podman-docker buildah skopeo toolbox"
 
 # do not add git-flow, it does not well integrate with git-extras!
 #ZSH_PLUGINS="github git git-extras tig docker docker-compose tmux"
@@ -46,6 +46,7 @@ main() {
 
 	# GUI installed?
 	if [ -n "$XDG_CURRENT_DESKTOP" ]; then
+		install_fira_code_nerd_font
 		install_flatpak_packages
 		install_jetbrains_toolbox
 		install_vscode_$PKG_MANAGER
@@ -152,6 +153,20 @@ install_jetbrains_toolbox() {
 	(/tmp/jetbrains-toolbox &)
 }
 
+install_fira_code_nerd_font() {
+	echo installing Fira Code Nerd Font...
+
+	for weight in Bold Light Medium Regular Retina SemiBold; do
+		echo fetching Fira Code $weight
+		wget --quiet --no-verbose --directory-prefix=/tmp "https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/FiraCode/${weight}/complete/Fira Code ${weight} Nerd Font Complete Mono.ttf"
+	done
+
+	test -d /usr/local/share/fonts || sudo mkdir --parents /usr/local/share/fonts
+	sudo mv /tmp/Fira\ Code\ *.ttf /usr/local/share/fonts
+
+	sudo fc-cache -f -v
+}
+
 install_flatpak_packages() {
 	echo installing flatpak packages...
 
@@ -159,8 +174,8 @@ install_flatpak_packages() {
 	sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 	sudo flatpak install -y flathub com.axosoft.GitKraken flathub org.freeplane.App io.github.mmstick.FontFinder
-	
-	echo "alias gitkraken=com.axosoft.GitKraken" | sudo tee -a /etc/profile.d/dev-base-aliases.sh >/dev/null
+
+	echo "alias gitkraken=flatpak run com.axosoft.GitKraken" | sudo tee -a /etc/profile.d/dev-base-aliases.sh >/dev/null
 }
 
 install_git_flow() {
@@ -179,7 +194,7 @@ config_vscode() {
 	mkdir --parent ~/.config/Code/User
 	cat >~/.config/Code/User/settings.json <<-EOF
 		{
-				"editor.fontFamily": "'Fira Code','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+				"editor.fontFamily": "'FiraCode Nerd Font Mono','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
 				"editor.fontLigatures": true,
 				"editor.formatOnSave": true,
 				"telemetry.enableTelemetry": false,
@@ -196,7 +211,7 @@ config_zsh() {
 
 	if ! [ -d ~/.config/kitty ]; then
 		test -d ~/.config/kitty || mkdir --parents ~/.config/kitty
-		echo "font_family        Fira Code Regular" >~/.config/kitty/kitty.conf
+		echo "font_family        FiraCode Nerd Font Mono" >~/.config/kitty/kitty.conf
 	fi
 
 	cat >~/.zshrc <<-EOF
