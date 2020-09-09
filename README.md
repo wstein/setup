@@ -1,16 +1,22 @@
 # setup
 setup scripts
 
-## Usage:
-```sh
-curl -sL raw.github.com/wstein/setup/master/dev-base | sh 
+## Usage: (master)
 ```
+curl -fsSL raw.github.com/wstein/setup/master/dev-base | sh -s
+```
+## Usage: (develop)
+
+```sh
+curl -fsSL raw.github.com/wstein/setup/develop/dev-base | sh -s
+```
+
 
 # check with docker:
 ## checkout
-~~~
+```sh
 git clone --branch=develop git://github.com/wstein/setup $HOME/setup
-~~~
+```
 
 ## Fedora: 
 ```sh

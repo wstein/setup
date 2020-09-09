@@ -1,10 +1,13 @@
 = Setup Enhanced Session Mode for Fedora  
 
-== Run inside Fedora
+== Run inside Fedora (master)
 ```sh
-curl -fsSL https://github.com/wstein/setup/master/fedora/hyperv | sh -s
+curl -fsSL raw.github.com/wstein/setup/master/fedora/hyperv | sh -s
 ```
-
+== Run inside Fedora (develop)
+```sh
+curl -fsSL raw.github.com/wstein/setup/develop/fedora/hyperv | sh -s
+```
 == Config VM
 ```ps1
 Set-VM -EnhancedSessionTransportType HvSocket -VMName "VM name"
