@@ -14,8 +14,6 @@ if ! [ -f "/etc/modules-load.d/hv_sock.conf" ] || [ "$(cat /etc/modules-load.d/h
   echo "hv_sock" | sudo tee -a /etc/modules-load.d/hv_sock.conf > /dev/null
 fi
 
-sudo systemctl enable --now xrdp
-
 # Configure xrdp
 sudo sed -i -e "/^port=3389/c\port=vsock://-1:3389" \
             -e "/^use_vsock=.*/c\use_vsock=false" \
@@ -28,3 +26,6 @@ sudo sed -i "/^X11DisplayOffset=.*/c\X11DisplayOffset=0" /etc/xrdp/sesman.ini
 if ! [ -f /etc/X11/Xwrapper.config ] || [ "$(cat /etc/X11/Xwrapper.config | grep allowed_users=anybody)" = "" ]; then
   echo "allowed_users=anybody" | sudo tee -a /etc/X11/Xwrapper.config > /dev/null
 fi
+
+sudo systemctl enable --now xrdp
+
