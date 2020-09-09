@@ -240,6 +240,9 @@ config_zsh() {
 		antigen apply
 	EOF
 
+	# powerline10k config
+	wget --directory-prefix=~ https://raw.github.com/wstein/setup/develop/config/.p10k.zsh
+
 	echo /usr/bin/zsh | sudo lchsh "$(whoami)"
 }
 
