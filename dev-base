@@ -16,7 +16,7 @@ set -e
 # evaluates to one of apt, yum, unknown
 PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
 
-PACKAGES="bash-completion gpg wget curl libuser flatpak hub git fossil pv htop screen tmux aria2 jq neovim ffmpeg zsh graphviz sl screenfetch schroot"
+PACKAGES="bash-completion gpg wget curl libuser ruby flatpak hub git fossil pv htop screen tmux aria2 jq neovim ffmpeg zsh graphviz sl screenfetch schroot"
 
 # GUI installed?
 if [ -n "$XDG_CURRENT_DESKTOP" ]; then
@@ -29,7 +29,7 @@ if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
 fi
 
 PACKAGES_DEBIAN="$PACKAGES graphicsmagick openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
-PACKAGES_FEDORA="$PACKAGES GraphicsMagick java-11-openjdk-devel openssh gitui podman-compose podman-docker buildah skopeo toolbox"
+PACKAGES_FEDORA="$PACKAGES GraphicsMagick java-11-openjdk-devel openssh gitui podman-compose podman-docker buildah skopeo toolbox pykickstart pwkickstart"
 
 # do not add git-flow, it does not well integrate with git-extras!
 #ZSH_PLUGINS="github git git-extras tig docker docker-compose tmux"

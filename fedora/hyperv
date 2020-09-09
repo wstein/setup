@@ -3,7 +3,7 @@
 set -e 
 
 # install 
-sudo dnf -y install hyperv-daemons hyperv-tools hypervfcopyd hypervkvpd hypervvssd xrdp
+sudo dnf -y install hyperv-daemons hyperv-tools hypervfcopyd hypervkvpd hypervvssd xrdp tigervnc-server-minimal
 
 # Set basic session to 1920x1080 
 sudo grubby --update-kernel=ALL --args="video=hyperv_fb:1920x1080"
