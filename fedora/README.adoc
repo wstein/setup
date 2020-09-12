@@ -12,3 +12,6 @@ curl -fsSL raw.github.com/wstein/setup/develop/fedora/hyperv | sh -s
 ```ps1
 Set-VM -EnhancedSessionTransportType HvSocket -VMName "VM name"
 ```
+
+== Same as Ubuntu
+curl -fsSL https://raw.githubusercontent.com/Hinara/linux-vm-tools/ubuntu20-04/ubuntu/20.04/install.sh | sh -s
