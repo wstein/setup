@@ -25,7 +25,7 @@ fi
 
 # Gnome installed?
 if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
-	PACKAGES="$PACKAGES gnome-tweak-tool"
+	PACKAGES="$PACKAGES gnome-tweak-tool guake"
 fi
 
 PACKAGES_DEBIAN="$PACKAGES graphicsmagick openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
