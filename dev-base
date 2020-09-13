@@ -92,9 +92,12 @@ base_configuration() {
 
 	# don't use Wayland (obs does not support Wayland)
 	if [ -f /etc/gdm/custom.conf ]; then
-		sudo sed -e "s/#WaylandEnable/WaylandEnable=false/" /etc/gdm/custom.conf
+		sudo sed -ie "s/#WaylandEnable/WaylandEnable=false/" /etc/gdm/custom.conf
 	fi
-
+	if [ -f /etc/gdm3/custom.conf ]; then
+		sudo sed -ie "s/#WaylandEnable/WaylandEnable=false/" /etc/gdm3/custom.conf
+	fi
+	
 	# add $HOME/bin and $HOME/.local/bin to .profile (for Debian distros)
 	if [ -f "$HOME/.profile" ]; then
 		cat <<-EOF >>"$HOME/.profile"
