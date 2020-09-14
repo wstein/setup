@@ -242,15 +242,16 @@ config_zsh() {
 		# Tell Antigen that you're done.
 		antigen apply
 		
-		# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-		test -f ~/.p10k.zsh && source ~/.p10k.zsh
-
+		# To customize prompt, run powerline 10k.
+		P10K_CONFIG="$HOME/.config/p10k.ansi.zsh"
+		test -f $P10K_CONFIG && source $P10K_CONFIG
 	EOF
 
 	# powerline10k config
-	curl -fsSL https://raw.github.com/wstein/setup/develop/config/.p10k.zsh >~/.p10k.zsh
+	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k.ansi.zsh    >~/.config/p10k.ansi.zsh
+	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k.unicode.zsh >~/.config/p10k.unicode.zsh
 
-	echo /usr/bin/zsh | sudo lchsh "$(whoami)"
+	# echo /usr/bin/zsh | sudo lchsh "$(whoami)"
 }
 
 main "$@"
