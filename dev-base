@@ -170,6 +170,21 @@ install_fira_code_nerd_font() {
 	sudo mv /tmp/Fira\ Code\ *.ttf /usr/local/share/fonts
 
 	sudo fc-cache -f -v
+
+	gsettings set org.gnome.desktop.interface monospace-font-name 'FiraCode Nerd Font Mono 10'
+	
+	sudo tee /etc/fonts/conf.avail/46-monospace.conf >/dev/null <<-EOF
+	<match target="pattern">
+		<test name="family" qual="any">
+			<string>monospace</string>
+		</test>
+		<edit binding="strong" mode="prepend" name="family">
+			<string>FiraCode Nerd Font Mono</string>
+		</edit>
+	</match>
+	EOF
+	
+	ln -s /etc/fonts/conf.avail/46-monospace.conf /etc/fonts/conf.d
 }
 
 install_flatpak_packages() {
