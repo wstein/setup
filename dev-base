@@ -70,6 +70,8 @@ install_packages_yum() {
 
 	sudo yum -y install $PACKAGES_FEDORA
 
+	sudo usermod -aG docker $(whoami)
+
 	# Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
 	sudo touch /etc/containers/nodocker
 }
