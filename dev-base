@@ -84,8 +84,8 @@ base_configuration() {
 		mkdir --parents "$HOME/.local/bin"
 	fi
 
-	# create vim alias
-	echo "alias vim=nvim" | sudo tee -a /etc/profile.d/dev-base-aliases.sh >/dev/null
+	# Fedora does update alternatives
+	update-alternatives --install /usr/bin/vim vim "$(command -v nvim)" 30
 
 	# create ssh key
 	if ! [ -f ~/.ssh/id_rsa ]; then
