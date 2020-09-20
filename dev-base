@@ -16,7 +16,7 @@ set -e
 # evaluates to one of apt, yum, unknown
 PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
 
-PACKAGES="bash-completion gpg wget curl libuser ruby flatpak hub git fossil pv htop screen tmux aria2 jq neovim ffmpeg zsh graphviz sl screenfetch schroot"
+PACKAGES="bash-completion gpg wget curl libuser ruby flatpak hub git fossil pv htop screen tmux aria2 jq neovim ffmpeg zsh graphviz lolcat sl screenfetch schroot"
 
 # GUI installed?
 if [ -n "$XDG_CURRENT_DESKTOP" ]; then
