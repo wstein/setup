@@ -85,7 +85,7 @@ base_configuration() {
 	fi
 
 	# Fedora does update alternatives
-	update-alternatives --install /usr/bin/vim vim "$(command -v nvim)" 30
+	sudo update-alternatives --install /usr/bin/vim vim "$(command -v nvim)" 30
 
 	# create ssh key
 	if ! [ -f ~/.ssh/id_rsa ]; then
@@ -184,7 +184,7 @@ install_fira_code_nerd_font() {
 	</match>
 	EOF
 	
-	ln -s /etc/fonts/conf.avail/46-monospace.conf /etc/fonts/conf.d
+	sudo ln -s /etc/fonts/conf.avail/46-monospace.conf /etc/fonts/conf.d
 }
 
 install_flatpak_packages() {
