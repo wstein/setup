@@ -233,7 +233,7 @@ config_zsh() {
 	fi
 
 	cat >~/.zshrc <<-EOF
-		source $HOME/.local/bin/antigen.zsh
+		source \$HOME/.local/bin/antigen.zsh
 
 		# Load the oh-my-zsh's library.
 		antigen use oh-my-zsh
@@ -259,7 +259,7 @@ config_zsh() {
 		
 		# To customize prompt, run powerline 10k.
 		P10K_CONFIG="$HOME/.config/p10k.ansi.zsh"
-		test -f $P10K_CONFIG && source $P10K_CONFIG
+		test -f \$P10K_CONFIG && source \$P10K_CONFIG
 	EOF
 
 	# powerline10k config
