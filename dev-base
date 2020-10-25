@@ -16,11 +16,26 @@ set -e
 # evaluates to one of apt, yum, unknown
 PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
 
-PACKAGES="bash-completion gpg wget curl libuser ruby flatpak hub git fossil pv htop screen tmux aria2 jq neovim ffmpeg zsh graphviz lolcat sl screenfetch schroot"
+PACKAGES="bash-completion gpg wget curl libuser ruby flatpak hub git pass fossil pv htop screen tmux aria2 jq neovim lolcat ffmpeg zsh graphviz sl screenfetch schroot lftp"
 
 # GUI installed?
 if [ -n "$XDG_CURRENT_DESKTOP" ]; then
-	PACKAGES="$PACKAGES gitk git-gui kitty meld keepassxc putty"
+  PACKAGES="$PACKAGES gitk git-gui kitty meld keepassxc putty gparted"
+
+  case $PKG_MANAGER in
+	apt)
+		PACKAGES="$PACKAGES chromium"
+		break
+		;;	
+	yum)
+		PACKAGES="$PACKAGES chromium-browser"
+		break
+		;;
+	*)
+		echo "Sorry, unknown package manager \"$PKG_MANAGER\""
+		exit 1
+		;;
+  esac
 fi
 
 # Gnome installed?
@@ -149,6 +164,43 @@ install_vscode_yum() {
 
 install_jetbrains_toolbox() {
 	echo installing Jetbrains Toolbox...
+	
+	# create .local/share/JetBrains/Toolbox folder
+	test -d .local/share/JetBrains/Toolbox || mkdir --parents .local/share/JetBrains/Toolbox
+	
+	# create base configuration 
+	cat >.local/share/JetBrains/Toolbox/.settings.json <<-EOF
+	{ 
+	  "update" : { 
+	    "filter" : { 
+	      "quality_filter" : { 
+	        "order_value" : 10000 
+	      } 
+	    } 
+	  },
+	  "shell_scripts" : {
+	    "enabled" : true,
+	    "location" : "~/.local/bin"
+	  },
+	  "jetbrains_account" : { 
+	    "accounts" : [ ] 
+	  }, 
+	  "network" : { 
+	    "keystore" : { 
+	      "location" : "~/.local/share/JetBrains/Toolbox/cacerts", 
+	      "password" : "changeit" 
+	    } 
+	  }, 
+	  "signal" : "settingsChanged", 
+	  "privacy_policy" : { 
+	    "eua_accepted_version" : "1.2" 
+	  }, 
+	  "statistics" : { 
+	    "allow" : false 
+	  }, 
+	  "channel_rollback_max_history" : 1 
+	}
+	EOF
 
 	DL_LINK=$(curl -sL "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release" | jq -r .TBA[0].downloads.linux.link)
 	wget --continue --output-document=/tmp/jetbrains-toolbox.tgz "$DL_LINK"
@@ -163,7 +215,7 @@ install_fira_code_nerd_font() {
 
 	for weight in Bold Light Medium Regular Retina SemiBold; do
 		echo fetching Fira Code $weight
-		wget --quiet --no-verbose --directory-prefix=/tmp "https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/FiraCode/${weight}/complete/Fira Code ${weight} Nerd Font Complete Mono.ttf"
+		wget --quiet --no-verbose --mirror --no-directories --directory-prefix=/tmp "https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/FiraCode/${weight}/complete/Fira Code ${weight} Nerd Font Complete Mono.ttf"
 	done
 
 	test -d /usr/local/share/fonts || sudo mkdir --parents /usr/local/share/fonts
@@ -173,7 +225,7 @@ install_fira_code_nerd_font() {
 
 	gsettings set org.gnome.desktop.interface monospace-font-name 'FiraCode Nerd Font Mono 10'
 	
-	sudo tee /etc/fonts/conf.d/46-monospace.conf >/dev/null <<-EOF
+	sudo tee /etc/fonts/conf.d/46-monospace-firacode.conf >/dev/null <<-EOF
 	<match target="pattern">
 		<test name="family" qual="any">
 			<string>monospace</string>
@@ -191,7 +243,7 @@ install_flatpak_packages() {
 	# setup flatpak repo
 	sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-	sudo flatpak install -y flathub com.axosoft.GitKraken flathub org.freeplane.App io.github.mmstick.FontFinder
+	sudo flatpak install -y com.axosoft.GitKraken flathub org.freeplane.App io.github.mmstick.FontFinder
 
 	echo "alias gitkraken=flatpak run com.axosoft.GitKraken" | sudo tee -a /etc/profile.d/dev-base-aliases.sh >/dev/null
 }
@@ -233,7 +285,7 @@ config_zsh() {
 	fi
 
 	cat >~/.zshrc <<-EOF
-		source \$HOME/.local/bin/antigen.zsh
+		source ~/.local/bin/antigen.zsh
 
 		# Load the oh-my-zsh's library.
 		antigen use oh-my-zsh
@@ -258,7 +310,7 @@ config_zsh() {
 		antigen apply
 		
 		# To customize prompt, run powerline 10k.
-		P10K_CONFIG="$HOME/.config/p10k.ansi.zsh"
+		P10K_CONFIG="~/.config/p10k.ansi.zsh"
 		test -f \$P10K_CONFIG && source \$P10K_CONFIG
 	EOF
 
@@ -266,7 +318,7 @@ config_zsh() {
 	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k.ansi.zsh    >~/.config/p10k.ansi.zsh
 	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k.unicode.zsh >~/.config/p10k.unicode.zsh
 
-	# echo /usr/bin/zsh | sudo lchsh "$(whoami)"
+	echo /usr/bin/zsh | sudo lchsh "$(whoami)"
 }
 
 main "$@"
