@@ -63,6 +63,8 @@ main() {
 	if [ -n "$XDG_CURRENT_DESKTOP" ]; then
 		install_fira_code_nerd_font
 		install_jetbrains_toolbox
+		install_gh_$PKG_MANAGER
+		install_brave_$PKG_MANAGER
 		install_vscode_$PKG_MANAGER
 		config_vscode
 		install_flatpak_packages
@@ -136,6 +138,48 @@ create_bin_folder() {
 	git remote add origin https://github.com/wstein/bin
 	git pull origin master
 	cd "$HOME"
+}
+
+install_gh_apt() {
+	echo installing github cli...
+
+	# setup repo
+	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+	sudo apt-add-repository https://cli.github.com/packages
+
+	sudo apt update
+	sudo apt -y install gh
+}
+
+install_gh_yum() {
+	echo installing github cli...
+
+	# setup repo
+	sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+	sudo dnf install gh
+}
+
+install_brave_apt() {
+	echo installing Brave Browser cli...
+
+	# setup repo
+	sudo apt -y install apt-transport-https curl gnupg
+	curl -s https://brave-browser-apt-release.s3.brave.com/brave-core.asc | sudo apt-key --yes --keyring /etc/apt/trusted.gpg.d/brave-browser-release.gpg add -
+	echo "deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+
+	sudo apt -y update
+	sudo apt -y install -y brave-browser
+}
+
+install_brave_yum() {
+	echo installing Brave Browser cli...
+
+	# setup repo
+	sudo dnf -y install dnf-plugins-core
+	sudo dnf config-manager --add-repo https://brave-browser-rpm-release.s3.brave.com/x86_64/
+	sudo rpm --import https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
+
+	sudo dnf -y install brave-browser
 }
 
 install_vscode_apt() {
