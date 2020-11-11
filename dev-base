@@ -61,14 +61,15 @@ main() {
 
 	# GUI installed?
 	if [ -n "$XDG_CURRENT_DESKTOP" ]; then
+		install_gh_$PKG_MANAGER		
+		install_brave_$PKG_MANAGER
 		install_fira_code_nerd_font
 		install_jetbrains_toolbox
 		install_gh_$PKG_MANAGER
 		install_brave_$PKG_MANAGER
+		install_gitkraken_$PKG_MANAGER
 		install_vscode_$PKG_MANAGER
 		config_vscode
-		install_gh_$PKG_MANAGER		
-		install_brave_$PKG_MANAGER
 		# install_flatpak_packages
 	fi
 }
@@ -162,7 +163,7 @@ install_gh_yum() {
 }
 
 install_brave_apt() {
-	echo installing Brave Browser cli...
+	echo installing Brave Browser...
 
 	# setup repo
 	sudo apt -y install apt-transport-https curl gnupg
@@ -175,7 +176,7 @@ install_brave_apt() {
 }
 
 install_brave_yum() {
-	echo installing Brave Browser cli...
+	echo installing Brave Browser...
 
 	# setup repo
 	sudo dnf -y install dnf-plugins-core
@@ -183,6 +184,20 @@ install_brave_yum() {
 	sudo rpm --import https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
 
 	sudo dnf -y install brave-browser
+}
+
+install_gitkraken_apt() {
+	echo installing GitKraken...
+
+	wget -P /tmp https://release.gitkraken.com/linux/gitkraken-amd64.deb
+	sudo dpkg -i /tmp/gitkraken-amd64.deb
+}
+
+install_gitkraken_yum() {
+	echo installing GitKraken...
+
+	wget -P /tmp https://release.gitkraken.com/linux/gitkraken-amd64.rpm
+	sudo dnf -y install /tmp/gitkraken-amd64.rpm
 }
 
 install_vscode_apt() {
