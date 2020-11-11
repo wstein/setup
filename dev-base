@@ -108,6 +108,8 @@ base_configuration() {
 	sudo update-alternatives --install /usr/bin/vim vim "$(command -v nvim)" 30
 	# emulate MacOS open
 	sudo update-alternatives --install /usr/bin/open open "$(command -v xdg-open)" 30
+	# replace ls with exa
+	sudo update-alternatives --install /usr/bin/ls ls "$(command -v exa)" 30
 
 	# create ssh key
 	if ! [ -f ~/.ssh/id_rsa ]; then
