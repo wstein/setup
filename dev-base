@@ -16,7 +16,7 @@ set -e
 # evaluates to one of apt, yum, unknown
 PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
 
-PACKAGES="bash-completion gpg wget curl libuser ruby flatpak hub git pass fossil pv htop screen tmux aria2 jq neovim lolcat ffmpeg zsh graphviz sl screenfetch schroot lftp"
+PACKAGES="bash-completion exa gpg wget curl libuser ruby flatpak hub git pass fossil pv htop screen tmux aria2 jq neovim lolcat ffmpeg zsh graphviz sl screenfetch schroot lftp"
 
 # GUI installed?
 if [ -n "$XDG_CURRENT_DESKTOP" ]; then
@@ -24,7 +24,7 @@ if [ -n "$XDG_CURRENT_DESKTOP" ]; then
 
   case $PKG_MANAGER in
 	apt)
-		PACKAGES="$PACKAGES chromium"
+		PACKAGES="$PACKAGES chromium-browser"
 		break
 		;;	
 	yum)
@@ -67,7 +67,9 @@ main() {
 		install_brave_$PKG_MANAGER
 		install_vscode_$PKG_MANAGER
 		config_vscode
-		install_flatpak_packages
+		install_gh_$PKG_MANAGER		
+		install_brave_$PKG_MANAGER
+		# install_flatpak_packages
 	fi
 }
 
@@ -164,7 +166,8 @@ install_brave_apt() {
 
 	# setup repo
 	sudo apt -y install apt-transport-https curl gnupg
-	curl -s https://brave-browser-apt-release.s3.brave.com/brave-core.asc | sudo apt-key --yes --keyring /etc/apt/trusted.gpg.d/brave-browser-release.gpg add -
+
+	curl -s https://brave-browser-apt-release.s3.brave.com/brave-core.asc | sudo apt-key --keyring /etc/apt/trusted.gpg.d/brave-browser-release.gpg add -
 	echo "deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
 
 	sudo apt -y update
@@ -354,13 +357,14 @@ config_zsh() {
 		antigen apply
 		
 		# To customize prompt, run powerline 10k.
-		P10K_CONFIG="\$HOME/.config/p10k.ansi.zsh"
+		P10K_CONFIG="\$HOME/.config/p10k/unicode.zsh"
 		test -f \$P10K_CONFIG && source \$P10K_CONFIG
 	EOF
 
 	# powerline10k config
-	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k.ansi.zsh    >~/.config/p10k.ansi.zsh
-	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k.unicode.zsh >~/.config/p10k.unicode.zsh
+	test -d ~/.config/p10k || mkdir --parents ~/.config/p10k
+	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/ansi.zsh    >~/.config/p10k/ansi.zsh
+	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/unicode.zsh >~/.config/p10k/unicode.zsh
 
 	echo /usr/bin/zsh | sudo lchsh "$(whoami)"
 }
