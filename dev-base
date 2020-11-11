@@ -372,7 +372,11 @@ config_zsh() {
 		antigen apply
 		
 		# To customize prompt, run powerline 10k.
-		P10K_CONFIG="\$HOME/.config/p10k/unicode.zsh"
+		if [ -n "\$SSH_TTY" ]; then
+			P10K_CONFIG="\$HOME/.config/p10k/ansi.zsh"
+		else
+			P10K_CONFIG="\$HOME/.config/p10k/unicode.zsh"
+		fi
 		test -f \$P10K_CONFIG && source \$P10K_CONFIG
 	EOF
 
