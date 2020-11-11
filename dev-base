@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Usage:
-#	 curl -sL raw.github.com/wstein/setup/master/dev-base | sh
+#	 curl -sL github.com/wstein/setup/raw/master/dev-base | sh
 # or shorter:
 #	 curl -sL git.io/dev-based | sh
 #
