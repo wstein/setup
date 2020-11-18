@@ -20,13 +20,13 @@ PACKAGES="bash-completion exa moreutils gpg wget curl libuser ruby flatpak hub g
 
 # GUI installed?
 if [ -n "$XDG_CURRENT_DESKTOP" ]; then
-  PACKAGES="$PACKAGES gitk git-gui kitty meld keepassxc putty gparted"
+	PACKAGES="$PACKAGES gitk git-gui kitty meld keepassxc putty gparted"
 
-  case $PKG_MANAGER in
+	case $PKG_MANAGER in
 	apt)
 		PACKAGES="$PACKAGES chromium-browser"
 		break
-		;;	
+		;;
 	yum)
 		PACKAGES="$PACKAGES chromium"
 		break
@@ -35,7 +35,7 @@ if [ -n "$XDG_CURRENT_DESKTOP" ]; then
 		echo "Sorry, unknown package manager \"$PKG_MANAGER\""
 		exit 1
 		;;
-  esac
+	esac
 fi
 
 # Gnome installed?
@@ -61,7 +61,7 @@ main() {
 
 	# GUI installed?
 	if [ -n "$XDG_CURRENT_DESKTOP" ]; then
-		install_gh_$PKG_MANAGER		
+		install_gh_$PKG_MANAGER
 		install_brave_$PKG_MANAGER
 		install_fira_code_nerd_font
 		install_jetbrains_toolbox
@@ -123,7 +123,7 @@ base_configuration() {
 	if [ -f /etc/gdm3/custom.conf ]; then
 		sudo sed -ie "s/#WaylandEnable.*/WaylandEnable=false/" /etc/gdm3/custom.conf
 	fi
-	
+
 	# add $HOME/bin and $HOME/.local/bin to .profile (for Debian distros)
 	if [ -f "$HOME/.profile" ]; then
 		cat <<-EOF >>"$HOME/.profile"
@@ -230,42 +230,42 @@ install_vscode_yum() {
 
 install_jetbrains_toolbox() {
 	echo installing Jetbrains Toolbox...
-	
+
 	# create .local/share/JetBrains/Toolbox folder
 	test -d .local/share/JetBrains/Toolbox || mkdir --parents .local/share/JetBrains/Toolbox
-	
-	# create base configuration 
+
+	# create base configuration
 	cat >.local/share/JetBrains/Toolbox/.settings.json <<-EOF
-	{ 
-	  "update" : { 
-	    "filter" : { 
-	      "quality_filter" : { 
-	        "order_value" : 10000 
-	      } 
-	    } 
-	  },
-	  "shell_scripts" : {
-	    "enabled" : true,
-	    "location" : "~/.local/bin"
-	  },
-	  "jetbrains_account" : { 
-	    "accounts" : [ ] 
-	  }, 
-	  "network" : { 
-	    "keystore" : { 
-	      "location" : "~/.local/share/JetBrains/Toolbox/cacerts", 
-	      "password" : "changeit" 
-	    } 
-	  }, 
-	  "signal" : "settingsChanged", 
-	  "privacy_policy" : { 
-	    "eua_accepted_version" : "1.2" 
-	  }, 
-	  "statistics" : { 
-	    "allow" : false 
-	  }, 
-	  "channel_rollback_max_history" : 1 
-	}
+		{ 
+		  "update" : { 
+		    "filter" : { 
+		      "quality_filter" : { 
+		        "order_value" : 10000 
+		      } 
+		    } 
+		  },
+		  "shell_scripts" : {
+		    "enabled" : true,
+		    "location" : "~/.local/bin"
+		  },
+		  "jetbrains_account" : { 
+		    "accounts" : [ ] 
+		  }, 
+		  "network" : { 
+		    "keystore" : { 
+		      "location" : "~/.local/share/JetBrains/Toolbox/cacerts", 
+		      "password" : "changeit" 
+		    } 
+		  }, 
+		  "signal" : "settingsChanged", 
+		  "privacy_policy" : { 
+		    "eua_accepted_version" : "1.2" 
+		  }, 
+		  "statistics" : { 
+		    "allow" : false 
+		  }, 
+		  "channel_rollback_max_history" : 1 
+		}
 	EOF
 
 	DL_LINK=$(curl -sL "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release" | jq -r .TBA[0].downloads.linux.link)
@@ -290,16 +290,16 @@ install_fira_code_nerd_font() {
 	sudo fc-cache -f -v
 
 	gsettings set org.gnome.desktop.interface monospace-font-name 'FiraCode Nerd Font Mono 10'
-	
+
 	sudo tee /etc/fonts/conf.d/46-monospace-firacode.conf >/dev/null <<-EOF
-	<match target="pattern">
-		<test name="family" qual="any">
-			<string>monospace</string>
-		</test>
-		<edit binding="strong" mode="prepend" name="family">
-			<string>FiraCode Nerd Font Mono</string>
-		</edit>
-	</match>
+		<match target="pattern">
+			<test name="family" qual="any">
+				<string>monospace</string>
+			</test>
+			<edit binding="strong" mode="prepend" name="family">
+				<string>FiraCode Nerd Font Mono</string>
+			</edit>
+		</match>
 	EOF
 }
 
@@ -330,11 +330,11 @@ config_vscode() {
 	mkdir --parent ~/.config/Code/User
 	cat >~/.config/Code/User/settings.json <<-EOF
 		{
-				"editor.fontFamily": "'FiraCode Nerd Font Mono','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
-				"editor.fontLigatures": true,
-				"editor.formatOnSave": true,
-				"telemetry.enableTelemetry": false,
-				"telemetry.enableCrashReporter": false
+		  "editor.fontFamily": "'FiraCode Nerd Font Mono','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+		  "editor.fontLigatures": true,
+		  "editor.formatOnSave": true,
+		  "telemetry.enableCrashReporter": false,
+		  "telemetry.enableTelemetry": false
 		}
 	EOF
 	(code &)
@@ -375,7 +375,7 @@ config_zsh() {
 
 		# Tell Antigen that you're done.
 		antigen apply
-		
+
 		# To customize prompt, run powerline 10k.
 		if [ -n "\$SSH_TTY" ]; then
 			P10K_CONFIG="\$HOME/.config/p10k/ansi.zsh"
@@ -387,7 +387,7 @@ config_zsh() {
 
 	# powerline10k config
 	test -d ~/.config/p10k || mkdir --parents ~/.config/p10k
-	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/ansi.zsh    >~/.config/p10k/ansi.zsh
+	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/ansi.zsh >~/.config/p10k/ansi.zsh
 	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/unicode.zsh >~/.config/p10k/unicode.zsh
 
 	echo /usr/bin/zsh | sudo lchsh "$(whoami)"
