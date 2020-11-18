@@ -107,11 +107,7 @@ base_configuration() {
 	fi
 
 	# Fedora does update alternatives
-	sudo update-alternatives --install /usr/bin/vim vim "$(command -v nvim)" 30
-	# emulate MacOS open
-	sudo update-alternatives --install /usr/bin/open open "$(command -v xdg-open)" 30
-	# replace ls with exa
-	sudo update-alternatives --install /usr/bin/ls ls "$(command -v exa)" 30
+	sudo update-alternatives --install /usr/bin/vim vim "$(command -v nvim)" 100
 
 	# create ssh key
 	if ! [ -f ~/.ssh/id_rsa ]; then
@@ -384,11 +380,15 @@ config_zsh() {
 		# Tell Antigen that you're done.
 		antigen apply
 
+		# aliases
+		alias ls=exa
+		alias open=xdg-open
+
 		# To customize prompt, run powerline 10k.
 		if [ -n "\$SSH_TTY" ]; then
-			P10K_CONFIG="\$HOME/.config/p10k/ansi.zsh"
+		  P10K_CONFIG="\$HOME/.config/p10k/ansi.zsh"
 		else
-			P10K_CONFIG="\$HOME/.config/p10k/unicode.zsh"
+		  P10K_CONFIG="\$HOME/.config/p10k/unicode.zsh"
 		fi
 		test -f \$P10K_CONFIG && source \$P10K_CONFIG
 	EOF
