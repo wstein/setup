@@ -2,8 +2,10 @@
 
 # Usage:
 #	 curl -sL github.com/wstein/setup/raw/master/dev-base | sh
-# or shorter:
-#	 curl -sL git.io/dev-based | sh
+# or
+#	 curl -sL github.com/wstein/setup/raw/develop/dev-base | sh
+# or shorthand for develop branch:
+#	 curl -sL git.io/devbase | sh
 #
 # git clone git://github.com/wstein/setup && cd setup && git checkout current
 #
@@ -293,12 +295,12 @@ install_fira_code_nerd_font() {
 
 	sudo tee /etc/fonts/conf.d/46-monospace-firacode.conf >/dev/null <<-EOF
 		<match target="pattern">
-			<test name="family" qual="any">
-				<string>monospace</string>
-			</test>
-			<edit binding="strong" mode="prepend" name="family">
-				<string>FiraCode Nerd Font Mono</string>
-			</edit>
+		  <test name="family" qual="any">
+		    <string>monospace</string>
+		  </test>
+		  <edit binding="strong" mode="prepend" name="family">
+		    <string>FiraCode Nerd Font Mono</string>
+		  </edit>
 		</match>
 	EOF
 }
