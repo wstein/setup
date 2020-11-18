@@ -384,6 +384,9 @@ config_zsh() {
 		alias ls=exa
 		alias open=xdg-open
 
+		# extend path
+		export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+
 		# To customize prompt, run powerline 10k.
 		if [ -n "\$SSH_TTY" ]; then
 		  P10K_CONFIG="\$HOME/.config/p10k/ansi.zsh"
