@@ -18,7 +18,7 @@ set -e
 # evaluates to one of apt, yum, unknown
 PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
 
-PACKAGES="bash-completion exa moreutils gpg wget curl libuser ruby flatpak hub git pass fossil pv htop screen tmux aria2 jq neovim lolcat ffmpeg zsh graphviz sl screenfetch schroot lftp"
+PACKAGES="bash-completion moreutils gpg wget curl libuser ruby flatpak hub git pass fossil pv htop screen tmux aria2 jq neovim lolcat ffmpeg zsh graphviz sl screenfetch schroot lftp"
 
 # GUI installed?
 if [ -n "$XDG_CURRENT_DESKTOP" ]; then
@@ -29,10 +29,12 @@ if [ -n "$XDG_CURRENT_DESKTOP" ]; then
 		PACKAGES="$PACKAGES chromium-browser"
 		break
 		;;
+
 	yum)
 		PACKAGES="$PACKAGES chromium"
 		break
 		;;
+
 	*)
 		echo "Sorry, unknown package manager \"$PKG_MANAGER\""
 		exit 1
@@ -46,7 +48,7 @@ if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
 fi
 
 PACKAGES_DEBIAN="$PACKAGES graphicsmagick openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
-PACKAGES_FEDORA="$PACKAGES GraphicsMagick java-11-openjdk-devel openssh podman-compose podman-docker buildah skopeo toolbox pykickstart pwkickstart"
+PACKAGES_FEDORA="$PACKAGES GraphicsMagick java-11-openjdk-devel exa openssh podman-compose podman-docker buildah skopeo toolbox pykickstart pwkickstart"
 
 # do not add git-flow, it does not well integrate with git-extras!
 #ZSH_PLUGINS="github git git-extras tig docker docker-compose tmux"
@@ -59,6 +61,7 @@ main() {
 	create_bin_folder
 	install_git_flow
 	install_git_toolbelt
+	install_exa
 	config_zsh
 
 	# GUI installed?
@@ -96,6 +99,23 @@ install_packages_yum() {
 
 	# Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
 	sudo touch /etc/containers/nodocker
+}
+
+install_exa() {
+	echo installing exa package...
+
+	if [ -z "$(command -v exa)" ]; then
+		curl -L https://github.com/ogham/exa/releases/download/v0.9.0/exa-linux-x86_64-0.9.0.zip >exa-linux-x86_64.zip
+		unzip exa-linux-x86_64.zip
+		rm exa-linux-x86_64.zip
+		sudo mv exa-linux-x86_64 /usr/local/bin/exa
+
+		curl -L https://github.com/ogham/exa/raw/v0.9.0/contrib/man/exa.1 >exa.1
+		sudo mv exa.1 /usr/share/man/man1
+
+		curl -L https://raw.githubusercontent.com/ogham/exa/master/completions/completions.zsh >_exa
+		sudo mv _exa /usr/local/share/zsh/site-functions/
+	fi
 }
 
 base_configuration() {
