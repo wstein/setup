@@ -18,7 +18,7 @@ set -e
 # evaluates to one of apt, yum, unknown
 PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
 
-PACKAGES="bash-completion moreutils gpg wget curl libuser ruby flatpak hub git pass fossil pv htop screen tmux aria2 jq neovim lolcat ffmpeg zsh graphviz sl screenfetch schroot lftp"
+PACKAGES="bash-completion moreutils gpg wget curl libuser ruby git pass fossil pv htop screen tmux aria2 jq neovim lolcat ffmpeg zsh graphviz sl screenfetch schroot lftp"
 
 # GUI installed?
 if [ -n "$XDG_CURRENT_DESKTOP" ]; then
@@ -75,7 +75,6 @@ main() {
 		install_gitkraken_$PKG_MANAGER
 		install_vscode_$PKG_MANAGER
 		config_vscode
-		# install_flatpak_packages
 	fi
 }
 
@@ -319,17 +318,6 @@ install_fira_code_nerd_font() {
 		  </edit>
 		</match>
 	EOF
-}
-
-install_flatpak_packages() {
-	echo installing flatpak packages...
-
-	# setup flatpak repo
-	sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-	sudo flatpak install -y com.axosoft.GitKraken flathub org.freeplane.App io.github.mmstick.FontFinder
-
-	echo "alias gitkraken=flatpak run com.axosoft.GitKraken" | sudo tee -a /etc/profile.d/dev-base-aliases.sh >/dev/null
 }
 
 install_git_flow() {
