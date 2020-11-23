@@ -380,57 +380,70 @@ config_zsh() {
 			font_family     FiraCodeNerdFontCompleteM-Medium
 			font_features   FiraCodeNerdFontCompleteM-Medium +ss04 +ss07 +zero
 		EOF
-
 	fi
 
 	cat >~/.zshrc <<-EOF
+		# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+		# Initialization code that may require console input (password prompts, [y/n]
+		# confirmations, etc.) must go above this block; everything else may go below.
+		if [[ -r "\${XDG_CACHE_HOME:-\$HOME/.cache}/p10k-instant-prompt-\${(%):-%n}.zsh" ]]; then
+		  source "\${XDG_CACHE_HOME:-\$HOME/.cache}/p10k-instant-prompt-\${(%):-%n}.zsh"
+		fi
+		
 		source \$HOME/.local/bin/antigen.zsh
-
+		# Load the zsh-users bundles.
+		antigen bundle zsh-users/zsh-autosuggestions
+		antigen bundle zsh-users/zsh-syntax-highlighting
+		
 		# Load the oh-my-zsh's library.
 		antigen use oh-my-zsh
-
+		
 		# Bundles from the default repo (robbyrussell's oh-my-zsh).
 		#antigen bundle github < does not work with get-extras
+		
 		antigen bundle git
 		antigen bundle git-extras
 		antigen bundle fossil
 		antigen bundle docker
 		antigen bundle docker-compose
 		antigen bundle tmux
-		antigen bundle denysdovhan/gitio-zsh
 		antigen bundle command-not-found
-
-		# Syntax highlighting bundle.
-		antigen bundle zsh-users/zsh-syntax-highlighting
-
+		
+		# other bundles.
+		antigen bundle denysdovhan/gitio-zsh
+		
 		# Load the theme.
 		antigen theme romkatv/powerlevel10k
-
+		
 		# Tell Antigen that you're done.
 		antigen apply
-
+		
 		# aliases
 		alias ls=exa
 		alias open=xdg-open
-
+		
 		# extend path
-		export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
-
-		# To customize prompt, run powerline 10k.
-		if [ -n "\$SSH_TTY" ]; then
-		  P10K_CONFIG="\$HOME/.config/p10k/ansi.zsh"
+		export PATH="\$HOME/bin:\$HOME/.local/bin:\$PATH"
+		
+		# To customize prompt, run \$(p10k configure).
+		if [ -n "\$SSH_TTY" ] || [ "\$TERM" = "linux" ]; then
+		  P10K_CONFIG="\$HOME/.config/p10k/lean-ansi.zsh"
 		else
-		  P10K_CONFIG="\$HOME/.config/p10k/unicode.zsh"
+		  P10K_CONFIG="\$HOME/.config/p10k/rainbow-unicode.zsh"
 		fi
 		test -f \$P10K_CONFIG && source \$P10K_CONFIG
 	EOF
 
 	# powerline10k config
 	test -d ~/.config/p10k || mkdir --parents ~/.config/p10k
-	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/ansi.zsh >~/.config/p10k/ansi.zsh
-	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/unicode.zsh >~/.config/p10k/unicode.zsh
+	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/lean-ansi.zsh >~/.config/p10k/lean-ansi.zsh
+	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/lean-unicode.zsh >~/.config/p10k/lean-unicode.zsh
+	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/rainbow-ansi.zsh >~/.config/p10k/rainbow-ansi.zsh
+	curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/rainbow-unicode.zsh >~/.config/p10k/rainbow-unicode.zsh
 
-	echo /usr/bin/zsh | sudo lchsh "$(whoami)"
+	# set zsh as default shell
+	command -v zsh | sudo lchsh "$(whoami)"
+	zsh -i -c true
 }
 
 main "$@"
