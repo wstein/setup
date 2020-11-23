@@ -53,7 +53,7 @@ if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
 fi
 
 PACKAGES_DEBIAN="$PACKAGES ruby-dev zlib1g-dev build-essential graphicsmagick openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
-PACKAGES_FEDORA="$PACKAGES ruby-devel zlib-devel @development-tools GraphicsMagick java-11-openjdk-devel exa openssh podman-compose podman-docker buildah skopeo toolbox pykickstart pwkickstart"
+PACKAGES_FEDORA="$PACKAGES dnf-plugins-core ruby-devel zlib-devel @development-tools GraphicsMagick java-11-openjdk-devel exa openssh podman-compose podman-docker buildah skopeo toolbox pykickstart pwkickstart"
 
 # do not add git-flow, it does not well integrate with git-extras!
 #ZSH_PLUGINS="github git git-extras tig docker docker-compose tmux"
