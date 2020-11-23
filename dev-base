@@ -18,7 +18,7 @@ set -e
 # evaluates to one of apt, yum, unknown
 PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
 
-PACKAGES="bash-completion moreutils gpg wget curl libuser ruby git pass fossil pv htop screen tmux aria2 jq neovim lolcat ffmpeg zsh graphviz sl screenfetch schroot lftp"
+PACKAGES="bash-completion pandoc moreutils gpg wget curl libuser ruby openssh-server git pass fossil pv htop screen tmux aria2 jq neovim lolcat zsh graphviz sl screenfetch lftp"
 GEMS="lolcat solargraph ruby-debug-ide debase asciidoctor"
 
 install_ruby_gems() {
@@ -49,7 +49,7 @@ fi
 
 # Gnome installed?
 if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
-	PACKAGES="$PACKAGES gnome-tweak-tool guake"
+	PACKAGES="$PACKAGES gnome-tweak-tool"
 fi
 
 PACKAGES_DEBIAN="$PACKAGES ruby-dev zlib1g-dev build-essential graphicsmagick openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
