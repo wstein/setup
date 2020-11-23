@@ -19,6 +19,11 @@ set -e
 PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
 
 PACKAGES="bash-completion moreutils gpg wget curl libuser ruby git pass fossil pv htop screen tmux aria2 jq neovim lolcat ffmpeg zsh graphviz sl screenfetch schroot lftp"
+GEMS="lolcat solargraph ruby-debug-ide debase asciidoctor"
+
+install_ruby_gems() {
+	sudo gem install $GEMS
+}
 
 # GUI installed?
 if [ -n "$XDG_CURRENT_DESKTOP" ]; then
@@ -47,8 +52,8 @@ if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
 	PACKAGES="$PACKAGES gnome-tweak-tool guake"
 fi
 
-PACKAGES_DEBIAN="$PACKAGES graphicsmagick openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
-PACKAGES_FEDORA="$PACKAGES GraphicsMagick java-11-openjdk-devel exa openssh podman-compose podman-docker buildah skopeo toolbox pykickstart pwkickstart"
+PACKAGES_DEBIAN="$PACKAGES ruby-dev zlib1g-dev build-essential graphicsmagick openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
+PACKAGES_FEDORA="$PACKAGES ruby-devel zlib-devel @development-tools GraphicsMagick java-11-openjdk-devel exa openssh podman-compose podman-docker buildah skopeo toolbox pykickstart pwkickstart"
 
 # do not add git-flow, it does not well integrate with git-extras!
 #ZSH_PLUGINS="github git git-extras tig docker docker-compose tmux"
@@ -62,6 +67,7 @@ main() {
 	install_git_flow
 	install_git_toolbelt
 	install_exa
+	install_ruby_gems
 	config_zsh
 	add_fingerprints_to_getty_pre_login_banner
 
