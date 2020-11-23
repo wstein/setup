@@ -63,6 +63,7 @@ main() {
 	install_git_toolbelt
 	install_exa
 	config_zsh
+	add_fingerprints_to_getty_pre_login_banner
 
 	# GUI installed?
 	if [ -n "$XDG_CURRENT_DESKTOP" ]; then
@@ -76,6 +77,11 @@ main() {
 		install_vscode_$PKG_MANAGER
 		config_vscode
 	fi
+}
+
+add_fingerprints_to_getty_pre_login_banner() {
+	# add fingerprints to getty pre login banner
+	~/bin/fingerprints | sudo tee --append /etc/issue
 }
 
 install_packages_apt() {
@@ -127,6 +133,11 @@ base_configuration() {
 
 	# Fedora does update alternatives
 	sudo update-alternatives --install /usr/bin/vim vim "$(command -v nvim)" 100
+
+	# create ssh server keys if necessary
+	test -f /etc/ssh/ssh_host_rsa_key || ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
+	test -f /etc/ssh/ssh_host_ecdsa_key || ssh-keygen -f /etc/ssh/ssh_host_ecdsa_key -N '' -t ecdsa
+	test -f /etc/ssh/ssh_host_ed25519_key || ssh-keygen -f /etc/ssh/ssh_host_ed25519_key -N '' -t ed25519
 
 	# create ssh key
 	if ! [ -f ~/.ssh/id_rsa ]; then
