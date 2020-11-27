@@ -370,6 +370,7 @@ config_vscode() {
 		  },
 		  "telemetry.enableCrashReporter": false,
 		  "telemetry.enableTelemetry": false,
+		  "terminal.integrated.shell.linux": "/usr/bin/zsh",
 		  "workbench.colorTheme": "Monokai"
 		}
 	EOF
