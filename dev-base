@@ -19,7 +19,7 @@ set -e
 PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
 
 PACKAGES="bash-completion pandoc moreutils gpg wget curl libuser ruby openssh-server git git-extras pass fossil pv htop screen tmux aria2 jq neovim lolcat zsh graphviz sl screenfetch lftp"
-GEMS="lolcat solargraph ruby-debug-ide debase asciidoctor"
+GEMS="lolcat solargraph ruby-debug-ide debase asciidoctor pry"
 
 install_ruby_gems() {
 	sudo gem install $GEMS
