@@ -350,8 +350,15 @@ install_git_toolbelt() {
 config_vscode() {
 	echo configuring VSCode...
 
+	if [ -f /opt/.katacodacode/user-data/User/settings.json ]; then
+		VSCODE_SETTING_PATH='/opt/.katacodacode/user-data/User'
+	else
+		VSCODE_SETTING_PATH='$HOME/.config/Code/User'
+	fi
+		
 	mkdir --parent ~/.config/Code/User
-	cat >~/.config/Code/User/settings.json <<-EOF
+	
+	cat >$VSCODE_SETTING_PATH/settings.json <<-EOF
 		{
 		  "editor.fontFamily": "'FiraCode Nerd Font Mono','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
 		  "editor.fontLigatures": "'ss04', 'ss07', 'zero'"
