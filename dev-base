@@ -19,7 +19,7 @@ set -e
 PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
 
 PACKAGES="bash-completion pandoc moreutils gpg wget curl libuser ruby openssh-server git git-extras pass fossil pv htop screen tmux aria2 jq neovim lolcat zsh graphviz sl screenfetch lftp"
-GEMS="lolcat solargraph ruby-debug-ide debase asciidoctor pry"
+GEMS="lolcat solargraph ruby-debug-ide debase asciidoctor rufo pry"
 
 install_ruby_gems() {
 	sudo gem install "$GEMS"
@@ -50,8 +50,8 @@ if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
 	PACKAGES="$PACKAGES gnome-tweak-tool"
 fi
 
-PACKAGES_DEBIAN="$PACKAGES ruby-dev zlib1g-dev build-essential graphicsmagick openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
-PACKAGES_FEDORA="$PACKAGES dnf-plugins-core ruby-devel zlib-devel @development-tools GraphicsMagick java-11-openjdk-devel exa openssh podman-compose podman-docker buildah skopeo toolbox pykickstart pwkickstart"
+PACKAGES_DEBIAN="$PACKAGES shellcheck ruby-dev zlib1g-dev build-essential graphicsmagick openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
+PACKAGES_FEDORA="$PACKAGES ShellCheck dnf-plugins-core ruby-devel zlib-devel @development-tools GraphicsMagick java-11-openjdk-devel exa openssh podman-compose podman-docker buildah skopeo toolbox pykickstart pwkickstart"
 
 # do not add git-flow, it does not well integrate with git-extras!
 #ZSH_PLUGINS="github git git-extras tig docker docker-compose tmux"
