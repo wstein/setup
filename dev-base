@@ -22,7 +22,7 @@ PACKAGES="bash-completion pandoc moreutils gpg wget curl libuser ruby openssh-se
 GEMS="lolcat solargraph ruby-debug-ide debase asciidoctor pry"
 
 install_ruby_gems() {
-	sudo gem install $GEMS
+	sudo gem install "$GEMS"
 }
 
 # GUI installed?
@@ -32,12 +32,10 @@ if [ -n "$XDG_CURRENT_DESKTOP" ]; then
 	case $PKG_MANAGER in
 	apt)
 		PACKAGES="$PACKAGES chromium-browser"
-		break
 		;;
 
 	yum)
 		PACKAGES="$PACKAGES chromium"
-		break
 		;;
 
 	*)
@@ -60,7 +58,7 @@ PACKAGES_FEDORA="$PACKAGES dnf-plugins-core ruby-devel zlib-devel @development-t
 #ZSH_THEME="avit"
 
 main() {
-	install_packages_$PKG_MANAGER
+	install_packages_"$PKG_MANAGER"
 
 	base_configuration
 	create_bin_folder
@@ -73,14 +71,14 @@ main() {
 
 	# GUI installed?
 	if [ -n "$XDG_CURRENT_DESKTOP" ]; then
-		install_gh_$PKG_MANAGER
-		install_brave_$PKG_MANAGER
+		install_gh_"$PKG_MANAGER"
+		install_brave_"$PKG_MANAGER"
 		install_fira_code_nerd_font
 		install_jetbrains_toolbox
-		install_gh_$PKG_MANAGER
-		install_brave_$PKG_MANAGER
-		install_gitkraken_$PKG_MANAGER
-		install_vscode_$PKG_MANAGER
+		install_gh_"$PKG_MANAGER"
+		install_brave_"$PKG_MANAGER"
+		install_gitkraken_"$PKG_MANAGER"
+		install_vscode_"$PKG_MANAGER"
 		config_vscode
 	fi
 }
@@ -94,19 +92,19 @@ install_packages_apt() {
 	echo installing linux packages...
 
 	sudo apt -y update
-	sudo apt -y install $PACKAGES_DEBIAN
+	sudo apt -y install "$PACKAGES_DEBIAN"
 
-	sudo usermod -aG docker $(whoami)
+	sudo usermod -aG docker "$(whoami)"
 }
 
 install_packages_yum() {
 	echo installing linux packages...
 
 	# setup rpmfusion repo
-	sudo yum -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-	sudo yum -y install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+	sudo yum -y install "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
+	sudo yum -y install "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
 
-	sudo yum -y install $PACKAGES_FEDORA
+	sudo yum -y install "$PACKAGES_FEDORA"
 
 	# Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
 	sudo touch /etc/containers/nodocker
@@ -172,7 +170,7 @@ create_bin_folder() {
 	echo creating bin folder...
 
 	# check to create ~/bin
-	! test -d $HOME/bin && mkdir $HOME/bin
+	! test -d "$HOME"/bin && mkdir "$HOME"/bin
 
 	cd "$HOME/bin"
 	git init
@@ -340,7 +338,7 @@ install_fira_code_nerd_font() {
 install_git_flow() {
 	cd /tmp
 	curl -sL https://raw.githubusercontent.com/petervanderdoes/gitflow-avh/develop/contrib/gitflow-installer.sh | sudo bash -s install stable
-	cd $HOME
+	cd "$HOME"
 }
 
 install_git_toolbelt() {
@@ -353,11 +351,11 @@ config_vscode() {
 	if [ -f /opt/.katacodacode/user-data/User/settings.json ]; then
 		VSCODE_SETTING_PATH='/opt/.katacodacode/user-data/User'
 	else
-		VSCODE_SETTING_PATH='$HOME/.config/Code/User'
+		VSCODE_SETTING_PATH="\$HOME/.config/Code/User"
 	fi
-		
+
 	mkdir --parent ~/.config/Code/User
-	
+
 	cat >$VSCODE_SETTING_PATH/settings.json <<-EOF
 		{
 		  "editor.fontFamily": "'FiraCode Nerd Font Mono','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
@@ -397,15 +395,15 @@ config_zsh() {
 		if [[ -r "\${XDG_CACHE_HOME:-\$HOME/.cache}/p10k-instant-prompt-\${(%):-%n}.zsh" ]]; then
 		  source "\${XDG_CACHE_HOME:-\$HOME/.cache}/p10k-instant-prompt-\${(%):-%n}.zsh"
 		fi
-		
+
 		source \$HOME/.local/bin/antigen.zsh
-		
+
 		# Load the oh-my-zsh's library.
 		antigen use oh-my-zsh
-		
+
 		# Bundles from the default repo (robbyrussell's oh-my-zsh).
 		#antigen bundle github < does not work with get-extras
-		
+
 		antigen bundle git
 		antigen bundle git-extras
 		antigen bundle fossil
@@ -413,28 +411,28 @@ config_zsh() {
 		antigen bundle docker-compose
 		antigen bundle tmux
 		antigen bundle command-not-found
-		
+
 		# Load the zsh-users bundles.
 		antigen bundle zsh-users/zsh-autosuggestions
 		antigen bundle zsh-users/zsh-syntax-highlighting
 		antigen bundle wstein/git-toolbelt-zsh
-		
+
 		# other bundles.
 		antigen bundle denysdovhan/gitio-zsh
-		
+
 		# Load the theme.
 		antigen theme romkatv/powerlevel10k
-		
+
 		# Tell Antigen that you're done.
 		antigen apply
-		
+
 		# aliases
 		alias ls=exa
 		alias open=xdg-open
-		
+
 		# extend path
 		export PATH="\$HOME/bin:\$HOME/.local/bin:\$PATH"
-		
+
 		# To customize prompt, run \$(p10k configure).
 		if [ -n "\$SSH_TTY" ] || [ "\$TERM" = "linux" ]; then
 		  P10K_CONFIG="\$HOME/.config/p10k/lean-ansi.zsh"
