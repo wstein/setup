@@ -4,19 +4,19 @@
 echo configuring zsh...
 
 # powerline10k config
-test -d $HOME/.config/p10k || mkdir --parents $HOME/.config/p10k
-test -d $HOME/bin || mkdir --parents $HOME/bin
-test -d $HOME/.local/bin || mkdir --parents $HOME/.local/bin
+test -d \$HOME/.config/p10k || mkdir --parents \$HOME/.config/p10k
+test -d \$HOME/bin || mkdir --parents \$HOME/bin
+test -d \$HOME/.local/bin || mkdir --parents \$HOME/.local/bin
 
-curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/lean-ansi.zsh >$HOME/.config/p10k/lean-ansi.zsh
-curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/lean-unicode.zsh >$HOME/.config/p10k/lean-unicode.zsh
-curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/rainbow-ansi.zsh >$HOME/.config/p10k/rainbow-ansi.zsh
-curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/rainbow-unicode.zsh >$HOME/.config/p10k/rainbow-unicode.zsh
-curl -fsSL git.io/antigen >"$HOME/.local/bin/antigen.zsh"
+curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/lean-ansi.zsh >\$HOME/.config/p10k/lean-ansi.zsh
+curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/lean-unicode.zsh >\$HOME/.config/p10k/lean-unicode.zsh
+curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/rainbow-ansi.zsh >\$HOME/.config/p10k/rainbow-ansi.zsh
+curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/rainbow-unicode.zsh >\$HOME/.config/p10k/rainbow-unicode.zsh
+curl -fsSL git.io/antigen >"\$HOME/.local/bin/antigen.zsh"
 
-if ! [ -d $HOME/.config/kitty ]; then
-  test -d $HOME/.config/kitty || mkdir --parents $HOME/.config/kitty
-  cat <<-EOF >$HOME/.config/kitty/kitty.conf
+if ! [ -d \$HOME/.config/kitty ]; then
+  test -d \$HOME/.config/kitty || mkdir --parents \$HOME/.config/kitty
+  cat <<-EOF >\$HOME/.config/kitty/kitty.conf
     font_family     FiraCodeNerdFontCompleteM-Medium
     font_features   FiraCodeNerdFontCompleteM-Medium +ss04 +ss07 +zero
   EOF
