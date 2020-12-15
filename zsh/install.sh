@@ -6,6 +6,7 @@ echo configuring zsh...
 # powerline10k config
 test -d $HOME/.config/p10k || mkdir --parents $HOME/.config/p10k
 test -d $HOME/bin || mkdir --parents $HOME/bin
+test -d $HOME/.local/bin || mkdir --parents $HOME/.local/bin
 
 curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/lean-ansi.zsh >$HOME/.config/p10k/lean-ansi.zsh
 curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/lean-unicode.zsh >$HOME/.config/p10k/lean-unicode.zsh
