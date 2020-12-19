@@ -31,13 +31,14 @@ cat >$HOME/.zshrc <<-EOF
 	# Load the oh-my-zsh's library.
 	antigen use oh-my-zsh
 
+	# install git-extras if not installed from package manager
+	[ hash git-extras ] || antigen bundle tj/git-extras
+	
 	# Bundles from the default repo (robbyrussell's oh-my-zsh).
-	#antigen bundle github <- does not work with get-extras
+	#antigen bundle github < does not work with get-extras
 	antigen bundle git
-	antigen bundle tj/git-extras
-
-	antigen bundle git-extras
-	antigen bundle fossil
+	[ hash git-extras ] && antigen bundle git-extras
+	[ hash fossil ] && antigen bundle fossil
 	antigen bundle docker
 	antigen bundle docker-compose
 	antigen bundle tmux
