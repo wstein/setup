@@ -18,7 +18,7 @@ set -e
 # evaluates to one of apt, yum, unknown
 PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
 
-PACKAGES="bash-completion pandoc moreutils gpg wget curl libuser ruby openssh-server git git-extras pass fossil pv htop screen tmux aria2 jq neovim lolcat zsh graphviz sl screenfetch lftp"
+PACKAGES="bash-completion pandoc moreutils gpg wget curl libuser ruby openssh-server git git-extras ripgrep pass fossil pv htop screen tmux aria2 jq neovim lolcat zsh graphviz sl screenfetch lftp"
 GEMS="lolcat solargraph ruby-debug-ide debase asciidoctor rufo pry"
 
 install_ruby_gems() {
