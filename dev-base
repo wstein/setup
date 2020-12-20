@@ -413,6 +413,7 @@ config_zsh() {
 		[ hash fossil ] && antigen bundle fossil
 		antigen bundle docker
 		antigen bundle docker-compose
+		antigen bundle ripgrep
 		antigen bundle tmux
 		antigen bundle command-not-found
 
