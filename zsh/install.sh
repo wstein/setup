@@ -12,6 +12,8 @@ curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/lean-ansi.zsh
 curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/lean-unicode.zsh >$HOME/.config/p10k/lean-unicode.zsh
 curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/rainbow-ansi.zsh >$HOME/.config/p10k/rainbow-ansi.zsh
 curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/rainbow-unicode.zsh >$HOME/.config/p10k/rainbow-unicode.zsh
+curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/rainbow-dracula-ansi.zsh >$HOME/.config/p10k/rainbow-dracula-ansi.zsh
+curl -fsSL https://raw.github.com/wstein/setup/develop/config/p10k/rainbow-dracula-unicode.zsh >$HOME/.config/p10k/rainbow-dracula-unicode.zsh
 curl -fsSL git.io/antigen >"$HOME/.local/bin/antigen.zsh"
 
 if ! [ -d $HOME/.config/kitty ]; then
