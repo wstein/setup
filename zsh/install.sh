@@ -44,6 +44,7 @@ cat >$HOME/.zshrc <<-EOF
 	hash fossil && antigen bundle fossil
 	antigen bundle docker
 	antigen bundle docker-compose
+	antigen bundle ripgrep
 	antigen bundle tmux
 	antigen bundle command-not-found
 
@@ -66,11 +67,21 @@ cat >$HOME/.zshrc <<-EOF
 	#alias ls=exa
 	#alias open=xdg-open
 
-	# To customize prompt, run \$(p10k configure).
-	if [ -n "\$SSH_TTY" ] || [ "\$TERM" = "linux" ]; then
-		P10K_CONFIG="\$HOME/.config/p10k/lean-ansi.zsh"
+	# To customize prompt, run $(p10k configure).
+	if [ -n "$SSH_TTY" ] || [ "$TERM" = "linux" ] || true; then
+	  source "$HOME/.config/p10k/lean-ansi.zsh"
+	  # inside container?
+	  if [ -n "$container" ]; then
+	    typeset -g POWERLEVEL9K_DIR_FOREGROUND=5
+	    typeset -g POWERLEVEL9K_DIR_SHORTENED_FOREGROUND=5
+	    typeset -g POWERLEVEL9K_DIR_ANCHOR_FOREGROUND=5
+	  fi
 	else
-		P10K_CONFIG="\$HOME/.config/p10k/rainbow-unicode.zsh"
+	  source "$HOME/.config/p10k/rainbow-dracula-unicode.zsh"
+	  # inside container?
+	  if [ -n "$container" ]; then
+	    typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=5
+	    typeset -g POWERLEVEL9K_OS_ICON_BACKGROUND=0
+	  fi
 	fi
-	test -f \$P10K_CONFIG && source \$P10K_CONFIG
 EOF
