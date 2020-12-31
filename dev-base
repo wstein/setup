@@ -409,7 +409,6 @@ config_zsh() {
 		#antigen bundle github < does not work with get-extras
 
 		antigen bundle git
-		[ hash git-extras ] && antigen bundle git-extras
 		[ hash fossil ] && antigen bundle fossil
 		antigen bundle docker
 		antigen bundle docker-compose
