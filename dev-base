@@ -35,7 +35,7 @@ if [ -n "$XDG_CURRENT_DESKTOP" ]; then
 		;;
 
 	yum)
-		PACKAGES="$PACKAGES chromium"
+		PACKAGES="$PACKAGES chromium gcolor3"
 		;;
 
 	*)
