@@ -1,10 +1,16 @@
 #!/usr/env sh
-# start:
-#   curl -L https://github.com/wstein/setup/raw/develop/setup-zsh
+# install:
+#   curl -L https://github.com/wstein/setup/raw/develop/setup-zsh | zsh
 #
-# requried packages: curl git zsh
-# on debian:
-#   apt update && apt -y install git zsh curl $OPTIONAL exa neovim ripgrep tmux
+# requried packages: curl, git, zsh and procps!
+#
+#   apk add curl git procps zsh
+#   apt update && apt -y install curl git procps zsh
+#   dnf install -y curl git procps zsh
+#   pacman -Sy curl git procps zsh
+#   zypper install curl git procps zsh
+#
+# OPTIONAL: exa git-extras neovim ripgrep tmux
 
 set -eu
 
@@ -12,6 +18,7 @@ main() {
 	echo setup zsh...
 	create_folders
 	dl_files https://github.com/wstein/setup/raw/develop
+	zsh -lic true
 }
 
 create_folders() {
