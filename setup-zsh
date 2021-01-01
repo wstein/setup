@@ -1,0 +1,34 @@
+#!/usr/env sh
+# start:
+#   curl -L https://github.com/wstein/setup/raw/develop/setup-zsh
+#
+# requried packages: curl git zsh
+# on debian:
+#   apt update && apt -y install git zsh curl $OPTIONAL exa neovim ripgrep tmux
+
+set -eu
+
+main() {
+	echo setup zsh...
+	create_folders
+	dl_files https://github.com/wstein/setup/raw/develop
+}
+
+create_folders() {
+	test -d $HOME/.config/p10k || mkdir --parents $HOME/.config/p10k
+	test -d $HOME/bin || mkdir --parents $HOME/bin
+	test -d $HOME/.local/bin || mkdir --parents $HOME/.local/bin
+}
+
+dl_files() {
+	curl -fsSL https://git.io/antigen >"$HOME/.local/bin/antigen.zsh"
+	curl -fsSL $1/.zshrc >$HOME/.zshrc
+	curl -fsSL $1/config/p10k/lean-ansi.zsh >$HOME/.config/p10k/lean-ansi.zsh
+	curl -fsSL $1/config/p10k/lean-unicode.zsh >$HOME/.config/p10k/lean-unicode.zsh
+	curl -fsSL $1/config/p10k/rainbow-ansi.zsh >$HOME/.config/p10k/rainbow-ansi.zsh
+	curl -fsSL $1/config/p10k/rainbow-unicode.zsh >$HOME/.config/p10k/rainbow-unicode.zsh
+	curl -fsSL $1/config/p10k/rainbow-dracula-ansi.zsh >$HOME/.config/p10k/rainbow-dracula-ansi.zsh
+	curl -fsSL $1/config/p10k/rainbow-dracula-unicode.zsh >$HOME/.config/p10k/rainbow-dracula-unicode.zsh
+}
+
+main "$@"
