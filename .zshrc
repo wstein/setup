@@ -73,13 +73,4 @@ if [ -n "$SSH_TTY" ] || [ "$TERM" = "linux" ]; then
     fi
 else
     source "$HOME/.config/p10k/rainbow-dracula-unicode.zsh"
-    if [ -f /.dockerenv ]; then
-        # docker container
-        typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=33
-        typeset -g POWERLEVEL9K_OS_ICON_BACKGROUND=0
-    elif [ -f /run/.containerenv ]; then
-        # podman container
-        typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=9
-        typeset -g POWERLEVEL9K_OS_ICON_BACKGROUND=0
-    fi
 fi
