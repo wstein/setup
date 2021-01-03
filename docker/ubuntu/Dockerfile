@@ -1,4 +1,5 @@
-FROM ubuntu:20.10
+ARG UBUNTU_VERSION=20.10
+FROM ubuntu:${UBUNTU_VERSION}
 
 ARG TZ=Europe/Berlin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &&\
@@ -8,4 +9,5 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &&\
     wget -O- git.io/devbase | sh &&\
     apt-get -y clean
 
+WORKDIR /root
 ENTRYPOINT [ "zsh" ]
