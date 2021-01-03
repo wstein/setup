@@ -22,7 +22,7 @@ PACKAGES="bash-completion pandoc moreutils gpg wget curl libuser ruby openssh-se
 GEMS="lolcat solargraph ruby-debug-ide debase asciidoctor rufo pry"
 
 install_ruby_gems() {
-	sudo gem install "$GEMS"
+	sudo gem install $GEMS
 }
 
 # GUI installed?
@@ -31,7 +31,7 @@ if [ -n "$XDG_CURRENT_DESKTOP" ]; then
 
 	case $PKG_MANAGER in
 	apt)
-		PACKAGES="$PACKAGES chromium-browser"
+		PACKAGES="$PACKAGES chromium-browser gcolor3"
 		;;
 
 	yum)
@@ -92,7 +92,7 @@ install_packages_apt() {
 	echo installing linux packages...
 
 	sudo apt -y update
-	sudo apt -y install "$PACKAGES_DEBIAN"
+	sudo apt -y install $PACKAGES_DEBIAN
 
 	sudo usermod -aG docker "$(whoami)"
 }
@@ -104,7 +104,7 @@ install_packages_yum() {
 	sudo yum -y install "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
 	sudo yum -y install "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
 
-	sudo yum -y install "$PACKAGES_FEDORA"
+	sudo yum -y install $PACKAGES_FEDORA
 
 	# Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
 	sudo touch /etc/containers/nodocker
