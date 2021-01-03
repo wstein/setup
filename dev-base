@@ -358,18 +358,32 @@ config_vscode() {
 
 	cat >$VSCODE_SETTING_PATH/settings.json <<-EOF
 		{
-		  "editor.fontFamily": "'FiraCode Nerd Font Mono','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
-		  "editor.fontLigatures": "'ss04', 'ss07', 'zero'",
-		  "editor.formatOnSave": true,
+		  "editor.fontFamily": "'FiraCode NF','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+		  "editor.fontLigatures": "'ss04', 'ss06', 'ss07', 'zero'",
+		  "editor.formatOnSave": false,
+		  
+		  // Highlight Comments!
+		  // -------------------
 		  "editor.tokenColorCustomizations": {
-		    "[Monokai]": {
-		      "comments": "#F26440"
-		    }
+		    "[Dracula]": {
+		      "comments": "#FF6E6E"
+		    },
+		    "textMateRules": [
+		      {
+			"scope": "comment",
+			"settings": {
+			  "fontStyle": "italic bold"
+			}
+		      }
+		    ]
 		  },
+		  "ruby.format": "rubocop",
 		  "telemetry.enableCrashReporter": false,
 		  "telemetry.enableTelemetry": false,
-		  "terminal.integrated.shell.linux": "/usr/bin/zsh",
-		  "workbench.colorTheme": "Monokai"
+		  "terminal.integrated.fontFamily": "FiraCode NF",
+		  "workbench.colorTheme": "Dracula",
+		  //"git-graph.integratedTerminalShell": "D:/scoop/apps/msys2/current/usr/bin/zsh.exe",
+		  //"git.path": "D:/scoop/apps/msys2/current/vscode-git.cmd",
 		}
 	EOF
 	(code &)
