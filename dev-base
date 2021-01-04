@@ -348,13 +348,14 @@ install_git_toolbelt() {
 config_vscode() {
 	echo configuring VSCode...
 
+	sudo sed -i -e '$afs.inotify.max_user_watches=524288' /etc/sysctl.conf  
+
 	if [ -f /opt/.katacodacode/user-data/User/settings.json ]; then
 		VSCODE_SETTING_PATH='/opt/.katacodacode/user-data/User'
 	else
+		[ -d ~/.config/Code/User ] || mkdir --parent ~/.config/Code/User
 		VSCODE_SETTING_PATH="\$HOME/.config/Code/User"
 	fi
-
-	mkdir --parent ~/.config/Code/User
 
 	cat >$VSCODE_SETTING_PATH/settings.json <<-EOF
 		{
