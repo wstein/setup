@@ -5,5 +5,5 @@ setup minimal zsh base environments
 
 debian 10:
 ```sh
-docker build -f docker/Dockerfile --build-arg=BASE_IMAGE=debian:9 -t mydebian .  
+docker build -f docker/Dockerfile --build-arg=BASE_IMAGE=debian:10 -t myDebianImage .  
 ```
