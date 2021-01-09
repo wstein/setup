@@ -1,16 +1,12 @@
-ARG BASE_IMAGE=alpine:latest
-FROM alpine AS source
+FROM wstein/alpine:latest AS source
 
 COPY . /setup
-
-RUN apk add git
-
 WORKDIR /setup
 RUN git submodule init &&\
     git submodule update
 
 # ---------------------------
-FROM $BASE_IMAGE
+FROM ubuntu:20.10
 
 COPY --from=source /setup/bin /setup/.config /root/bin/
 COPY --from=source /setup/.config /root/.config/
