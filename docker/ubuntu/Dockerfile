@@ -11,4 +11,4 @@ RUN apt-get -y update &&\
     apt-get -y clean
 
 WORKDIR /root
-ENTRYPOINT [ "zsh" ]
+CMD [ "/usr/bin/env", "zsh" ]
