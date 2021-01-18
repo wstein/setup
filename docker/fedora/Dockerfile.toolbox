@@ -13,6 +13,7 @@ COPY --from=source /setup/.config /root/.config/
 
 WORKDIR /root/
 RUN bin/install-minimal &&\
+    dnf install -y java-11-openjdk-devel libcanberra-gtk3 PackageKit-gtk3-module &&\
     sh bin/setup-user &&\
     zsh -il -c true
 
