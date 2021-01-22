@@ -8,7 +8,7 @@ RUN git submodule init &&\
 # ---------------------------
 FROM alpine:latest
 
-COPY --from=source /setup/bin /setup/.config /root/bin/
+COPY --from=source /setup/bin /root/bin/
 COPY --from=source /setup/.config /root/.config/
 
 WORKDIR /root/
