@@ -9,15 +9,10 @@ RUN git submodule init &&\
 # ---------------------------
 FROM crystallang/crystal:latest-alpine
 
-
-COPY --from=source /setup/.config /root/.config/
-COPY --from=source /setup/bin /root/bin/
+COPY ./dev-base /tmp/dev-base
 
 WORKDIR /root/
-RUN apk add gmp-dev sqlite-dev openssl-dev libxml2-dev yaml-dev zlib-dev
-RUN bin/install-minimal &&\
-    sh bin/setup-user &&\
-    zsh -il -c true
+RUN sh -x /tmp/dev-base
 
 VOLUME [ "/data/crystal" ]
 WORKDIR /data/crystal
