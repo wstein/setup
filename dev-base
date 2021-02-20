@@ -24,6 +24,8 @@ main() {
 
 	# install zsh plugins ;-)
 	zsh -il -c true
+
+	neofetch
 }
 
 change_default_shell() {
