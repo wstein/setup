@@ -1,0 +1,415 @@
+#!/bin/sh
+
+# Usage:
+#	 curl -sL github.com/wstein/setup/raw/master/dev-base | sh
+# or
+#	 curl -sL github.com/wstein/setup/raw/develop/dev-base | sh
+# or shorthand for develop branch:
+#	 curl -sL git.io/devbase | sh
+#
+# git clone git://github.com/wstein/setup && cd setup && git checkout current
+#
+# check with docker:
+# - Fedora: docker run -it --rm -v /root/setup/dev-base:/tmp/dev-base:ro --entrypoint=/usr/bin/sh fedora -c "/tmp/dev-base && zsh"
+# - Debian: docker run -it --rm -v /root/setup/dev-base:/tmp/dev-base:ro --entrypoint=sh debian -c "apt update && apt install -y sudo && /tmp/dev-base && zsh"
+
+set -e
+
+# evaluates to one of apt, yum, unknown
+PKG_MANAGER=$({ command -v apt || command -v yum || echo unknown; } | rev | cut -d/ -f1 | rev)
+
+PACKAGES="bash-completion pandoc moreutils gpg wget curl libuser ruby openssh-server git git-extras ripgrep pass fossil pv htop screen tmux aria2 jq neovim zsh graphviz sl screenfetch lftp"
+GEMS="lolcat solargraph ruby-debug-ide debase asciidoctor rufo pry"
+
+install_ruby_gems() {
+	sudo gem install $GEMS
+}
+
+# GUI installed?
+if [ -n "$XDG_CURRENT_DESKTOP" ]; then
+	PACKAGES="$PACKAGES gitk git-gui kitty meld keepassxc putty gparted"
+
+	case $PKG_MANAGER in
+	apt)
+		PACKAGES="$PACKAGES chromium-browser gcolor3"
+		;;
+
+	yum)
+		PACKAGES="$PACKAGES chromium gcolor3"
+		;;
+
+	*)
+		echo "Sorry, unknown package manager \"$PKG_MANAGER\""
+		exit 1
+		;;
+	esac
+fi
+
+# Gnome installed?
+if [ "$XDG_CURRENT_DESKTOP" = "GNOME" ]; then
+	PACKAGES="$PACKAGES gnome-tweak-tool"
+fi
+
+PACKAGES_DEBIAN="$PACKAGES shellcheck ruby-dev zlib1g-dev build-essential graphicsmagick openjdk-11-jdk docker openssh-client docker-compose apt-transport-https"
+PACKAGES_FEDORA="$PACKAGES ShellCheck dnf-plugins-core ruby-devel zlib-devel @development-tools GraphicsMagick java-11-openjdk-devel exa openssh podman-compose podman-docker buildah skopeo toolbox pykickstart pwkickstart"
+
+# do not add git-flow, it does not well integrate with git-extras!
+#ZSH_PLUGINS="github git git-extras tig docker docker-compose tmux"
+#ZSH_THEME="avit"
+
+main() {
+	install_packages_"$PKG_MANAGER"
+
+	base_configuration
+	create_bin_folder
+	install_git_flow
+	install_git_toolbelt
+	install_exa
+	install_ruby_gems
+	config_zsh
+	add_fingerprints_to_getty_pre_login_banner
+
+	# GUI installed?
+	if [ -n "$XDG_CURRENT_DESKTOP" ]; then
+		install_gh_"$PKG_MANAGER"
+		install_brave_"$PKG_MANAGER"
+		install_fira_code_nerd_font
+		install_jetbrains_toolbox
+		install_gh_"$PKG_MANAGER"
+		install_brave_"$PKG_MANAGER"
+		install_gitkraken_"$PKG_MANAGER"
+		install_vscode_"$PKG_MANAGER"
+		config_vscode
+	fi
+}
+
+add_fingerprints_to_getty_pre_login_banner() {
+	# add fingerprints to getty pre login banner
+	~/bin/fingerprints | sudo tee --append /etc/issue
+}
+
+install_packages_apt() {
+	echo installing linux packages...
+
+	sudo apt -y update
+	sudo apt -y install $PACKAGES_DEBIAN
+
+	sudo usermod -aG docker "$(whoami)"
+}
+
+install_packages_yum() {
+	echo installing linux packages...
+
+	# setup rpmfusion repo
+	sudo yum -y install "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
+	sudo yum -y install "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
+
+	sudo yum -y install $PACKAGES_FEDORA
+
+	# Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+	sudo touch /etc/containers/nodocker
+}
+
+install_exa() {
+	echo installing exa package...
+
+	if [ -z "$(command -v exa)" ]; then
+		curl -L https://github.com/ogham/exa/releases/download/v0.9.0/exa-linux-x86_64-0.9.0.zip >exa-linux-x86_64.zip
+		unzip exa-linux-x86_64.zip
+		rm exa-linux-x86_64.zip
+		sudo mv exa-linux-x86_64 /usr/local/bin/exa
+
+		curl -L https://github.com/ogham/exa/raw/v0.9.0/contrib/man/exa.1 >exa.1
+		sudo mv exa.1 /usr/share/man/man1
+
+		curl -L https://raw.githubusercontent.com/ogham/exa/master/completions/completions.zsh >_exa
+		sudo mv _exa /usr/local/share/zsh/site-functions/
+	fi
+}
+
+base_configuration() {
+	echo doing base configuration...
+
+	# crate $HOME/.local/bin
+	if ! [ -d "$HOME/.local/bin" ]; then
+		mkdir --parents "$HOME/.local/bin"
+	fi
+
+	# Fedora does update alternatives
+	sudo update-alternatives --install /usr/bin/vim vim "$(command -v nvim)" 100
+
+	# create ssh server keys if necessary
+	test -f /etc/ssh/ssh_host_rsa_key || ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
+	test -f /etc/ssh/ssh_host_ecdsa_key || ssh-keygen -f /etc/ssh/ssh_host_ecdsa_key -N '' -t ecdsa
+	test -f /etc/ssh/ssh_host_ed25519_key || ssh-keygen -f /etc/ssh/ssh_host_ed25519_key -N '' -t ed25519
+
+	# create ssh key
+	if ! [ -f ~/.ssh/id_rsa ]; then
+		ssh-keygen -t rsa -b 4096 -N "" -f ~/.ssh/id_rsa
+	fi
+
+	# don't use Wayland (obs does not support Wayland)
+	if [ -f /etc/gdm/custom.conf ]; then
+		sudo sed -ie "s/#WaylandEnable.*/WaylandEnable=false/" /etc/gdm/custom.conf
+	fi
+	if [ -f /etc/gdm3/custom.conf ]; then
+		sudo sed -ie "s/#WaylandEnable.*/WaylandEnable=false/" /etc/gdm3/custom.conf
+	fi
+
+	# add $HOME/bin and $HOME/.local/bin to .profile (for Debian distros)
+	if [ -f "$HOME/.profile" ]; then
+		cat <<-EOF >>"$HOME/.profile"
+			if [ -d "$HOME/bin" ] ; then
+				PATH="$HOME/bin:$PATH"
+			fi
+		EOF
+	fi
+}
+
+create_bin_folder() {
+	echo creating bin folder...
+
+	# check to create ~/bin
+	! test -d "$HOME"/bin && mkdir "$HOME"/bin
+
+	cd "$HOME/bin"
+	git init
+	git remote add origin https://github.com/wstein/bin
+	git pull origin master
+	cd "$HOME"
+}
+
+install_gh_apt() {
+	echo installing github cli...
+
+	# setup repo
+	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+	sudo apt-add-repository https://cli.github.com/packages
+
+	sudo apt update
+	sudo apt -y install gh
+}
+
+install_gh_yum() {
+	echo installing github cli...
+
+	# setup repo
+	sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+	sudo dnf -y install gh
+}
+
+install_brave_apt() {
+	echo installing Brave Browser...
+
+	# setup repo
+	sudo apt -y install apt-transport-https curl gnupg
+
+	curl -s https://brave-browser-apt-release.s3.brave.com/brave-core.asc | sudo apt-key --keyring /etc/apt/trusted.gpg.d/brave-browser-release.gpg add -
+	echo "deb [arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+
+	sudo apt -y update
+	sudo apt -y install -y brave-browser
+}
+
+install_brave_yum() {
+	echo installing Brave Browser...
+
+	# setup repo
+	sudo dnf -y install dnf-plugins-core
+	sudo dnf config-manager --add-repo https://brave-browser-rpm-release.s3.brave.com/x86_64/
+	sudo rpm --import https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
+
+	sudo dnf -y install brave-browser
+}
+
+install_gitkraken_apt() {
+	echo installing GitKraken...
+
+	wget -P /tmp https://release.gitkraken.com/linux/gitkraken-amd64.deb
+	sudo dpkg -i /tmp/gitkraken-amd64.deb
+}
+
+install_gitkraken_yum() {
+	echo installing GitKraken...
+
+	wget -P /tmp https://release.gitkraken.com/linux/gitkraken-amd64.rpm
+	sudo dnf -y install /tmp/gitkraken-amd64.rpm
+}
+
+install_vscode_apt() {
+	echo installing Visual Studio Code...
+
+	# setup vscode repo
+	curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >packages.microsoft.gpg
+	sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+	sudo sh -c 'echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+
+	sudo apt-get install apt-transport-https
+	sudo apt-get update
+	sudo apt-get install code
+}
+
+install_vscode_yum() {
+	echo installing Visual Studio Code...
+
+	# setup vscode repo
+	sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+	sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+
+	sudo yum -y update
+	sudo yum -y install code
+}
+
+install_jetbrains_toolbox() {
+	echo installing Jetbrains Toolbox...
+
+	# create .local/share/JetBrains/Toolbox folder
+	test -d .local/share/JetBrains/Toolbox || mkdir --parents .local/share/JetBrains/Toolbox
+
+	# create base configuration
+	cat >.local/share/JetBrains/Toolbox/.settings.json <<-EOF
+		{ 
+		  "update" : { 
+		    "filter" : { 
+		      "quality_filter" : { 
+		        "order_value" : 10000 
+		      } 
+		    } 
+		  },
+		  "shell_scripts" : {
+		    "enabled" : true,
+		    "location" : "~/.local/bin"
+		  },
+		  "jetbrains_account" : { 
+		    "accounts" : [ ] 
+		  }, 
+		  "network" : { 
+		    "keystore" : { 
+		      "location" : "~/.local/share/JetBrains/Toolbox/cacerts", 
+		      "password" : "changeit" 
+		    } 
+		  }, 
+		  "signal" : "settingsChanged", 
+		  "privacy_policy" : { 
+		    "eua_accepted_version" : "1.2" 
+		  }, 
+		  "statistics" : { 
+		    "allow" : false 
+		  }, 
+		  "channel_rollback_max_history" : 1 
+		}
+	EOF
+
+	DL_LINK=$(curl -sL "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release" | jq -r .TBA[0].downloads.linux.link)
+	wget --continue --output-document=/tmp/jetbrains-toolbox.tgz "$DL_LINK"
+	tar -xzv --strip-components=1 -C /tmp -f /tmp/jetbrains-toolbox.tgz
+
+	# jetbrains-toolbox will automatically toolbox to ~/.local/share/...
+	(/tmp/jetbrains-toolbox &)
+}
+
+install_fira_code_nerd_font() {
+	echo installing Fira Code Nerd Font...
+
+	for weight in Bold Light Medium Regular Retina SemiBold; do
+		echo fetching Fira Code $weight
+		wget --quiet --no-verbose --mirror --no-directories --directory-prefix=/tmp "https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/FiraCode/${weight}/complete/Fira Code ${weight} Nerd Font Complete Mono.ttf"
+	done
+
+	test -d /usr/local/share/fonts || sudo mkdir --parents /usr/local/share/fonts
+	sudo mv /tmp/Fira\ Code\ *.ttf /usr/local/share/fonts
+
+	sudo fc-cache -f -v
+
+	gsettings set org.gnome.desktop.interface monospace-font-name 'FiraCode Nerd Font Mono 10'
+
+	sudo tee /etc/fonts/conf.d/46-monospace-firacode.conf >/dev/null <<-EOF
+		<match target="pattern">
+		  <test name="family" qual="any">
+		    <string>monospace</string>
+		  </test>
+		  <edit binding="strong" mode="prepend" name="family">
+		    <string>FiraCode Nerd Font Mono</string>
+		  </edit>
+		</match>
+	EOF
+}
+
+install_git_flow() {
+	cd /tmp
+	curl -sL https://raw.githubusercontent.com/petervanderdoes/gitflow-avh/develop/contrib/gitflow-installer.sh | sudo bash -s install stable
+	cd "$HOME"
+}
+
+install_git_toolbelt() {
+	curl -sL https://github.com/nvie/git-toolbelt/archive/v1.5.0.tar.gz | sudo tar xz --strip-components=1 --directory=/usr/local/bin/
+}
+
+config_vscode() {
+	echo configuring VSCode...
+
+	sudo sed -i -e '$afs.inotify.max_user_watches=524288' /etc/sysctl.conf
+
+	if [ -f /opt/.katacodacode/user-data/User/settings.json ]; then
+		VSCODE_SETTING_PATH='/opt/.katacodacode/user-data/User'
+	else
+		[ -d ~/.config/Code/User ] || mkdir --parent ~/.config/Code/User
+		VSCODE_SETTING_PATH="\$HOME/.config/Code/User"
+	fi
+
+	cat >$VSCODE_SETTING_PATH/settings.json <<-EOF
+		{
+		  "editor.fontFamily": "'FiraCode NF','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+		  "editor.fontLigatures": "'ss04', 'ss06', 'ss07', 'zero'",
+		  "editor.formatOnSave": false,
+		  
+		  // Highlight Comments!
+		  // -------------------
+		  "editor.tokenColorCustomizations": {
+		    "[Dracula]": {
+		      "comments": "#FF6E6E"
+		    },
+		    "textMateRules": [
+		      {
+			"scope": "comment",
+			"settings": {
+			  "fontStyle": "italic bold"
+			}
+		      }
+		    ]
+		  },
+		  "ruby.format": "rubocop",
+		  "telemetry.enableCrashReporter": false,
+		  "telemetry.enableTelemetry": false,
+		  "terminal.integrated.fontFamily": "FiraCode NF",
+		  "workbench.colorTheme": "Dracula",
+		  //"git-graph.integratedTerminalShell": "D:/scoop/apps/msys2/current/usr/bin/zsh.exe",
+		  //"git.path": "D:/scoop/apps/msys2/current/vscode-git.cmd",
+		}
+	EOF
+	(code &)
+}
+
+config_zsh() {
+	echo configuring kitty...
+
+	if ! [ -d ~/.config/kitty ]; then
+		test -d ~/.config/kitty || mkdir --parents ~/.config/kitty
+		cat <<-EOF >~/.config/kitty/kitty.conf
+			font_family     FiraCodeNerdFontCompleteM-Medium
+			font_features   FiraCodeNerdFontCompleteM-Medium +ss04 +ss07 +zero
+		EOF
+	fi
+}
+
+config_zsh() {
+	echo configuring zsh...
+
+	curl -fsSL https://github.com/wstein/setup/raw/develop/setup-zsh | sh
+
+	# set zsh as default shell
+	command -v zsh | sudo lchsh "$(whoami)"
+	zsh -il -c true
+}
+
+main "$@"
