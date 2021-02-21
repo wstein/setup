@@ -1,20 +1,23 @@
+ARG BASE_IMAGE=crystallang/crystal:latest-alpine
+FROM alpine AS source
 
-FROM wstein/alpine:latest AS source
+COPY dev-base /setup/dev-base
 
-COPY . /setup
-WORKDIR /setup
-RUN git submodule init &&\
-    git submodule update
+RUN apk add git
+
+WORKDIR /setup/
+RUN git clone --depth=1 https://github.com/wstein/bin &&\
+    git clone --depth=1 https://github.com/wstein/.config 
 
 # ---------------------------
-FROM crystallang/crystal:latest-alpine
+FROM $BASE_IMAGE
 
-COPY ./dev-base /tmp/dev-base
+COPY --from=source /setup/ /tmp/setup
+COPY --from=source /setup/bin/ /root/bin
+COPY --from=source /setup/.config/ /root/.config
 
 WORKDIR /root/
-RUN sh -x /tmp/dev-base
-
-VOLUME [ "/data/crystal" ]
-WORKDIR /data/crystal
+RUN /tmp/setup/dev-base &&\
+    rm -rf /tmp/*
 
 CMD [ "/usr/bin/env", "zsh" ]
