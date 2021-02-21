@@ -13,8 +13,6 @@ set -eu
 main() {
 	cd ~
 
-	padd git
-
 	clone_repositories
 
 	$HOME/bin/install-minimal
@@ -37,8 +35,14 @@ change_default_shell() {
 }
 
 clone_repositories() {
-	git clone https://github.com/wstein/.config
-	git clone https://github.com/wstein/bin
+	if ! [ -d $HOME/.config ]; then
+		command -v git || padd git
+		git clone https://github.com/wstein/.config
+	fi
+	if ! [ -d $HOME/bin ]; then
+		command -v git || padd git
+		test -d $HOME/bin || git clone https://github.com/wstein/bin
+	fi
 }
 
 padd() {
