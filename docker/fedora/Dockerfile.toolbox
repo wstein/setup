@@ -18,7 +18,8 @@ COPY --from=source /setup/bin/ /root/bin
 COPY --from=source /setup/.config/ /root/.config
 
 WORKDIR /root/
-RUN /tmp/setup/dev-base libcanberra-gtk3 PackageKit-gtk3-module &&\
+RUN dnf -y install libcanberra-gtk3 PackageKit-gtk3-module &&\
+    /tmp/setup/dev-base &&\
     rm -rf /tmp/*
 
 CMD [ "/usr/bin/env", "zsh" ]
