@@ -67,7 +67,7 @@ padd() {
 		;;
 
 	dnf | yum)
-		$SUDO dnf -y install $PACKAGES
+		$SUDO $PKG_MANAGER -y install $PACKAGES
 		;;
 
 	pacman)
