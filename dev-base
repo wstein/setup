@@ -30,7 +30,7 @@ change_default_shell() {
 	CMD_CHSH=$(command -v lchsh || command -v chsh || true)
 
 	if [ -n "$CMD_CHSH" ]; then
-		command -v zsh | $CMD_CHSH $(whoami)
+		command -v zsh | sudo $CMD_CHSH $(whoami)
 	fi
 }
 
