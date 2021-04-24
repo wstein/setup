@@ -6,6 +6,7 @@ pipeline {
         withCredentials(bindings: [string(credentialsId: 'DOCKER_IO_ACCESS_TOKEN', variable: 'DOCKER_IO_ACCESS_TOKEN')]) {
           sh 'echo $DOCKER_IO_ACCESS_TOKEN | docker login --password-stdin -u wstein'
         }
+
       }
     }
 
@@ -22,7 +23,7 @@ pipeline {
           steps {
             sh 'docker build -t wstein/archlinux:latest -f docker/archlinux/Dockerfile .'
             sh 'docker push wstein/archlinux:latest'
-            }
+          }
         }
 
         stage('Alpine') {
@@ -80,14 +81,21 @@ pipeline {
             sh 'docker push wstein/ubuntu:latest'
           }
         }
+
       }
     }
 
     stage('Logout') {
       steps {
-        //sh 'docker push wstein/archlinux:latest'
         sh 'docker logout'
       }
     }
+
+    stage('Cleanup') {
+      steps {
+        sh 'docker image prune -f'
+      }
+    }
+
   }
 }
