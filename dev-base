@@ -11,30 +11,30 @@
 set -eu
 
 main() {
-	cd ~
+	cd $HOME
 
-	clone_repositories
+	git_clone_repositories
 
 	$HOME/bin/install-minimal
 	$HOME/bin/setup-user
 
-	change_default_shell
-
-	# install zsh plugins ;-)
-	zsh -il -c true
+	setup_zsh
 
 	neofetch
 }
 
-change_default_shell() {
+setup_zsh() {
 	CMD_CHSH=$(command -v lchsh || command -v chsh || true)
 
 	if [ -n "$CMD_CHSH" ]; then
 		command -v zsh | sudo $CMD_CHSH $(whoami)
 	fi
+
+  # install zsh plugins ;-)
+	zsh -il -c true
 }
 
-clone_repositories() {
+git_clone_repositories() {
 	if ! [ -d $HOME/.config ]; then
 		command -v git || padd git
 		git clone https://github.com/wstein/.config

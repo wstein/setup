@@ -371,10 +371,10 @@ config_vscode() {
 		    },
 		    "textMateRules": [
 		      {
-			"scope": "comment",
-			"settings": {
+		  "scope": "comment",
+		  "settings": {
 			  "fontStyle": "italic bold"
-			}
+		  }
 		      }
 		    ]
 		  },
