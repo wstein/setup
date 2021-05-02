@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=fedora
+ARG BASE_IMAGE=fedora:33
 FROM alpine AS source
 
 COPY dev-base /setup/dev-base
