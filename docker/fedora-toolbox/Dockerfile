@@ -19,7 +19,7 @@ COPY --from=source /setup/.config/ /root/.config
 
 WORKDIR /root/
 RUN /root/bin/install-3rd-pty-repos &&\
-    dnf -y install libcanberra-gtk3 PackageKit-gtk3-module &&\
+    dnf -y install libcanberra-gtk3 PackageKit-gtk3-module libxshmfence &&\
     /tmp/setup/dev-base &&\
     rm -rf /tmp/*
 
