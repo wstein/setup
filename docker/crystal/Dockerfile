@@ -12,12 +12,13 @@ RUN git clone --depth=1 https://github.com/wstein/bin &&\
 # ---------------------------
 FROM $BASE_IMAGE
 
-COPY --from=source /setup/ /tmp/setup
 COPY --from=source /setup/bin/ /root/bin
 COPY --from=source /setup/.config/ /root/.config
 
 WORKDIR /root/
-RUN /tmp/setup/dev-base &&\
-    rm -rf /tmp/*
+RUN --mount=type=secret,id=GITHUB_TOKEN . /run/secrets/GITHUB_TOKEN &&\
+    export GITHUB_TOKEN &&\
+    bin/install-minimal &&\
+    bin/setup-user
 
 CMD [ "/usr/bin/env", "zsh" ]
