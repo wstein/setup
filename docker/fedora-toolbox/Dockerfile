@@ -13,14 +13,15 @@ RUN git clone --depth=1 https://github.com/wstein/bin &&\
 # ---------------------------
 FROM $BASE_IMAGE
 
-COPY --from=source /setup/ /tmp/setup
 COPY --from=source /setup/bin/ /root/bin
 COPY --from=source /setup/.config/ /root/.config
 
 WORKDIR /root/
-RUN /root/bin/install-3rd-pty-repos &&\
+RUN --mount=type=secret,id=GITHUB_TOKEN . /run/secrets/GITHUB_TOKEN &&\
+    export GITHUB_TOKEN &&\
+    /root/bin/install-3rd-pty-repos &&\
     dnf -y install libcanberra-gtk3 PackageKit-gtk3-module libxshmfence &&\
-    /tmp/setup/dev-base &&\
-    rm -rf /tmp/*
+    bin/install-minimal &&\
+    bin/setup-user
 
 CMD [ "/usr/bin/env", "zsh" ]
