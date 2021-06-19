@@ -20,7 +20,7 @@ WORKDIR /root/
 RUN --mount=type=secret,id=GITHUB_TOKEN . /run/secrets/GITHUB_TOKEN &&\
     export GITHUB_TOKEN &&\
     /root/bin/install-3rd-pty-repos &&\
-    dnf -y install libcanberra-gtk3 PackageKit-gtk3-module libxshmfence &&\
+    dnf -y install libcanberra-gtk3 PackageKit-gtk3-module libxshmfence nss libdrm mesa-libgbm &&\
     bin/install-minimal &&\
     bin/setup-user
 
