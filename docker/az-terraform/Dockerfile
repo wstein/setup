@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=rockylinux/rockylinux:8
+ARG BASE_IMAGE=mcr.microsoft.com/azure-cli:latest
 FROM alpine AS source
 
 COPY dev-base /setup/dev-base
@@ -19,6 +19,7 @@ WORKDIR /root/
 RUN --mount=type=secret,id=GITHUB_TOKEN . /run/secrets/GITHUB_TOKEN &&\
     export GITHUB_TOKEN &&\
     bin/install-minimal &&\
+    bin/install-terraform &&\
     bin/setup-user
 
 ENTRYPOINT [ "/usr/bin/env", "zsh" ]

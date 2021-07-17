@@ -21,4 +21,5 @@ RUN --mount=type=secret,id=GITHUB_TOKEN . /run/secrets/GITHUB_TOKEN &&\
     bin/install-minimal &&\
     bin/setup-user
 
-CMD [ "/usr/bin/env", "zsh" ]
+ENTRYPOINT [ "/usr/bin/env", "zsh" ]
+CMD [ ]
