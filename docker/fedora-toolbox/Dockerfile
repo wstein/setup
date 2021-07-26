@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=registry.fedoraproject.org/f33/fedora-toolbox:33
+ARG BASE_IMAGE=registry.fedoraproject.org/fedora-toolbox:33
 
 FROM alpine AS source
 
