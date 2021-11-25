@@ -13,13 +13,15 @@ set -eu
 main() {
 	cd $HOME
 
-	git_clone_repositories
+	create_bin_folder
+	create_config_folder
 
 	$HOME/bin/install-minimal
 	$HOME/bin/setup-user
 
 	setup_zsh
 
+  echo
 	neofetch
 }
 
@@ -34,15 +36,30 @@ setup_zsh() {
 	zsh -il -c true
 }
 
-git_clone_repositories() {
-	if ! [ -d $HOME/.config ]; then
-		command -v git || padd git
-		git clone https://github.com/wstein/.config
-	fi
-	if ! [ -d $HOME/bin ]; then
-		command -v git || padd git
-		test -d $HOME/bin || git clone https://github.com/wstein/bin
-	fi
+create_bin_folder() {
+	echo creating bin folder...
+
+	# check to create ~/bin
+	! test -d $HOME/bin && mkdir $HOME/bin
+
+	cd "$HOME/bin"
+	git init
+	git remote add origin https://github.com/wstein/bin
+	git pull origin main
+	cd "$HOME"
+}
+
+create_config_folder() {
+	echo creating .config folder...
+
+	# check to create ~/.config
+	! test -d $HOME/.config && mkdir $HOME/.config
+
+	cd "$HOME/.config"
+	git init
+	git remote add origin https://github.com/wstein/.config
+	git pull origin main
+	cd "$HOME"
 }
 
 padd() {
