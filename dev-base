@@ -68,7 +68,7 @@ padd() {
 
 	PACKAGES="$@"
 
-	PKG_MANAGER_PATH=$({ command -v apk || command -v apt || command -v dnf || command -v yum || command -v zypper || command -v pacman; })
+	PKG_MANAGER_PATH=$({ command -v apk || command -v apt || command -v dnf || command -v yum || command -v zypper || command -v pacman || command -v eopkg-cli; })
 
 	# /usr/bin/dnf -> dnf
 	PKG_MANAGER=${PKG_MANAGER_PATH##*/}
@@ -87,6 +87,11 @@ padd() {
 		$SUDO $PKG_MANAGER -y install $PACKAGES
 		;;
 
+	eopkg-cli)
+		$SUDO eopkg-cli update-repo
+		$SUDO eopkg-cli -y install $PACKAGES
+		;;
+	
 	pacman)
 		$SUDO pacman -Sy --noconfirm $PACKAGES glibc
 		;;
