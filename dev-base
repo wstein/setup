@@ -52,6 +52,7 @@ create_bin_folder() {
 	git init
 	git symbolic-ref HEAD refs/heads/main # use main instead of master branch
 	git remote add origin https://github.com/wstein/bin
+	git branch --set-upstream-to=origin/main main
 	git pull origin main
 	cd "$HOME"
 }
@@ -66,6 +67,7 @@ create_config_folder() {
 	git init
 	git symbolic-ref HEAD refs/heads/main # use main instead of master branch
 	git remote add origin https://github.com/wstein/.config
+	git branch --set-upstream-to=origin/main main
 	git pull origin main
 	cd "$HOME"
 }
