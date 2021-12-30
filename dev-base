@@ -87,6 +87,7 @@ padd() {
 		;;
 
 	apt)
+		$SUDO sed -i '/deb cdrom:/d' /etc/apt/sources.list # remove cdrom sources
 		$SUDO apt -y update
 		$SUDO apt -y install $PACKAGES
 		;;
