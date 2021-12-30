@@ -13,6 +13,8 @@ set -eu
 main() {
 	cd $HOME
 
+	install_git
+
 	create_bin_folder
 	create_config_folder
 
@@ -23,6 +25,10 @@ main() {
 
   echo
 	/usr/local/bin/neofetch
+}
+
+install_git() {
+	command -v git || padd git
 }
 
 setup_zsh() {
