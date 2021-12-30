@@ -22,7 +22,7 @@ main() {
 	setup_zsh
 
   echo
-	neofetch
+	/usr/local/bin/neofetch
 }
 
 setup_zsh() {
